@@ -10,11 +10,11 @@ export default function Navigation() {
 
   const navItems = [
     { href: '/', label: 'Home' },
-    { href: '/about', label: 'About Us' },
-    { href: '/services', label: 'Services' },
+    { href: '/#about', label: 'About Us' },
+    { href: '/#services', label: 'Services' },
     { href: '/#providers', label: 'For Providers' },
     { href: '/#quality', label: 'Quality & Compliance' },
-    { href: '/contact', label: 'Contact' },
+    { href: '/#contact', label: 'Contact' },
   ];
 
   return (
