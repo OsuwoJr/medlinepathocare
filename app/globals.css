@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #fafafa;
+  --foreground: #171717;
+  --font-inter: 'Inter', system-ui, sans-serif;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+.high-contrast {
+  --background: #ffffff;
+  --foreground: #000000;
+}
+
+.dark.high-contrast {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* High contrast mode adjustments */
+.high-contrast * {
+  border-color: currentColor !important;
+}
+
+.high-contrast a {
+  text-decoration: underline;
+}
+
+/* Font size controls */
+.text-base-size {
+  font-size: 1rem;
+}
+
+.text-large-size {
+  font-size: 1.125rem;
+}
+
+.text-xl-size {
+  font-size: 1.25rem;
+}
+
+.text-2xl-size {
+  font-size: 1.5rem;
+}
+
+.text-3xl-size {
+  font-size: 1.875rem;
+}
+
+.text-4xl-size {
+  font-size: 2.25rem;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #00bcd4;
+  outline-offset: 2px;
+}
+
+.high-contrast *:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
