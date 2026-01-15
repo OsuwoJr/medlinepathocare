@@ -34,28 +34,34 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
     setSubmitStatus('idle');
 
     try {
-      // Replace with your Formspree endpoint
-      const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'YOUR_FORMSPREE_ENDPOINT';
-      
-      const response = await fetch(formspreeEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          testName: test.title,
-          testId: test.id,
-          testPrice: test.price,
-          customerName: formData.name,
-          customerEmail: formData.email,
-          customerPhone: formData.phone,
-          preferredContact: formData.preferredContact,
-          message: formData.message,
-          bookingDate: new Date().toISOString(),
-        }),
-      });
+      if (formData.preferredContact === 'whatsapp') {
+        // Format booking details for WhatsApp message
+        const whatsappMessage = `*Test Booking Request*
 
-      if (response.ok) {
+*Test Details:*
+• Test Name: ${test.title}
+• Test ID: ${test.id}
+• Price: KES ${test.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
+
+*Customer Details:*
+• Name: ${formData.name}
+• Email: ${formData.email}
+• Phone: ${formData.phone}
+
+${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booking Date: ${new Date().toLocaleString('en-KE', { 
+          dateStyle: 'full', 
+          timeStyle: 'short' 
+        })}`;
+
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(whatsappMessage);
+        const whatsappNumber = '254796168900'; // Remove + for URL
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+
+        // Open WhatsApp in new tab/window
+        window.open(whatsappUrl, '_blank');
+
+        // Show success and close modal
         setSubmitStatus('success');
         setFormData({
           name: '',
@@ -69,7 +75,43 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
           setSubmitStatus('idle');
         }, 2000);
       } else {
-        setSubmitStatus('error');
+        // Email submission via Formspree
+        const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'YOUR_FORMSPREE_ENDPOINT';
+        
+        const response = await fetch(formspreeEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            testName: test.title,
+            testId: test.id,
+            testPrice: test.price,
+            customerName: formData.name,
+            customerEmail: formData.email,
+            customerPhone: formData.phone,
+            preferredContact: formData.preferredContact,
+            message: formData.message,
+            bookingDate: new Date().toISOString(),
+          }),
+        });
+
+        if (response.ok) {
+          setSubmitStatus('success');
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            preferredContact: 'email',
+            message: '',
+          });
+          setTimeout(() => {
+            onClose();
+            setSubmitStatus('idle');
+          }, 2000);
+        } else {
+          setSubmitStatus('error');
+        }
       }
     } catch (error) {
       console.error('Booking submission error:', error);
@@ -120,12 +162,11 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email Address *
+                Email Address (Optional)
               </label>
               <input
                 type="email"
                 id="email"
-                required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"

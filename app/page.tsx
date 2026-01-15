@@ -211,15 +211,17 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-              <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
-              <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
-                Referral Forms
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Easily accessible and simple online or printable referral forms.
-              </p>
-            </div>
+            <Link href="/providers/referral-form" className="group">
+              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors cursor-pointer">
+                <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
+                <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors">
+                  Referral Forms
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  Easily accessible and simple online or printable referral forms.
+                </p>
+              </div>
+            </Link>
 
             <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
               <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
