@@ -48,12 +48,45 @@ export default function ReferralFormPage() {
     specialInstructions: '',
   });
 
-  const handlePrint = () => {
-    window.print();
+  const [serialNumber, setSerialNumber] = useState<string>('');
+
+  const generateSerialNumber = (): string => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hour = String(now.getHours()).padStart(2, '0');
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    const second = String(now.getSeconds()).padStart(2, '0');
+    const microsecond = String(now.getMilliseconds()).padStart(3, '0');
+    
+    // Format: YYYYMMDD-HHMMSS-MMM
+    return `${year}${month}${day}-${hour}${minute}${second}-${microsecond}`;
   };
 
-  const handleDownload = () => {
-    window.print();
+  const handlePrint = () => {
+    const serial = generateSerialNumber();
+    setSerialNumber(serial);
+    // Small delay to ensure state is updated before print dialog opens
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
+  const handleDownloadPdf = () => {
+    const link = document.createElement('a');
+    link.href = '/documents/MP-LAB.TEST REQUEST FORM_MMC2025.pdf';
+    link.download = 'MP-LAB.TEST REQUEST FORM_MMC2025.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -68,10 +101,18 @@ export default function ReferralFormPage() {
           display: block;
           overflow: visible;
         }
+        .form-field-line::placeholder {
+          color: transparent;
+        }
+        .form-field-line:focus {
+          border-bottom: 2px dotted #1f2937;
+          outline: none;
+        }
         @media print {
           @page {
             margin: 0.1in;
             size: letter;
+            page-break-after: avoid;
           }
           html, body {
             background: white !important;
@@ -125,6 +166,17 @@ export default function ReferralFormPage() {
             margin-bottom: 1px !important;
             display: block !important;
             overflow: visible !important;
+            background: transparent !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .form-field-line::placeholder {
+            color: transparent !important;
+          }
+          input.form-field-line {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
           }
           .form-section {
             margin-bottom: 3px !important;
@@ -164,16 +216,30 @@ export default function ReferralFormPage() {
             <h2 className="text-lg font-bold text-primary-600 uppercase tracking-wide print:text-sm print:leading-none">
               LABORATORY TEST REQUEST FORM
             </h2>
+            {serialNumber && (
+              <div className="mt-1 print:mt-0.5">
+                <p className="text-xs font-semibold text-gray-700 print:text-[9px] print:leading-tight">
+                  Serial Number: <span className="font-mono">{serialNumber}</span>
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Download/Print Button */}
+          {/* Download/Print Buttons */}
           <div className="flex justify-center gap-3 py-3 px-4 no-print">
             <button
-              onClick={handleDownload}
+              onClick={handleDownloadPdf}
               className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-semibold shadow-md hover:shadow-lg"
             >
               <Download size={20} />
-              Download/Print
+              Download Pdf
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-semibold shadow-md hover:shadow-lg"
+            >
+              <Printer size={20} />
+              Print
             </button>
           </div>
 
@@ -189,35 +255,51 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Full Name:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.fullName || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div className="flex gap-3 items-end print:gap-2">
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Patient ID/Number:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.patientId || '................................................................................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.patientId}
+                    onChange={(e) => handleInputChange('patientId', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="................................................................................"
+                  />
                 </div>
                 <div className="flex gap-2 items-end print:gap-1">
                   <div className="w-20 print:w-14">
                     <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                       Age:
                     </label>
-                    <div className="form-field-line">
-                      <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.age || '...........'}</span>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.age}
+                      onChange={(e) => handleInputChange('age', e.target.value)}
+                      className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                      placeholder="..........."
+                    />
                   </div>
                   <div className="w-24 print:w-16">
                     <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                       Gender:
                     </label>
-                    <div className="form-field-line">
-                      <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.gender || '.........'}</span>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.gender}
+                      onChange={(e) => handleInputChange('gender', e.target.value)}
+                      className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                      placeholder="........."
+                    />
                   </div>
                 </div>
               </div>
@@ -225,9 +307,13 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Contact (Address/Phone/Email):
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.contact || '............................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.contact}
+                  onChange={(e) => handleInputChange('contact', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="............................................................"
+                />
               </div>
             </div>
           </div>
@@ -242,25 +328,37 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Known Allergies:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.allergies || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.allergies}
+                  onChange={(e) => handleInputChange('allergies', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Current Medications:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.medications || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.medications}
+                  onChange={(e) => handleInputChange('medications', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Pre-existing Conditions:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.conditions || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.conditions}
+                  onChange={(e) => handleInputChange('conditions', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
             </div>
           </div>
@@ -275,43 +373,63 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Requesting Physician/Doctor/Clinician:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestingPhysician || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.requestingPhysician}
+                  onChange={(e) => handleInputChange('requestingPhysician', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Department:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.department || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.department}
+                  onChange={(e) => handleInputChange('department', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div className="flex gap-3 items-end print:gap-1">
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Signature:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.signature || '................................................................................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.signature}
+                    onChange={(e) => handleInputChange('signature', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="................................................................................"
+                  />
                 </div>
                 <div className="flex gap-2 items-end print:gap-1">
                   <div className="w-32 print:w-24">
                     <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                       Phone:
                     </label>
-                    <div className="form-field-line">
-                      <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.phone || '....................................'}</span>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                      placeholder="...................................."
+                    />
                   </div>
                   <div className="w-32 print:w-24">
                     <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                       Email/Fax:
                     </label>
-                    <div className="form-field-line">
-                      <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.emailFax || '.......................................'}</span>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.emailFax}
+                      onChange={(e) => handleInputChange('emailFax', e.target.value)}
+                      className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                      placeholder="......................................."
+                    />
                   </div>
                 </div>
               </div>
@@ -319,9 +437,13 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Referring Facility Name & Location:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.referringFacility || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.referringFacility}
+                  onChange={(e) => handleInputChange('referringFacility', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
             </div>
           </div>
@@ -336,42 +458,62 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Sample Type:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.sampleType || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.sampleType}
+                  onChange={(e) => handleInputChange('sampleType', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Container/Preservative Used:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.containerPreservative || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.containerPreservative}
+                  onChange={(e) => handleInputChange('containerPreservative', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div className="flex gap-3 print:gap-1">
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Date of Collection:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.collectionDate || '........................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.collectionDate}
+                    onChange={(e) => handleInputChange('collectionDate', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="........................"
+                  />
                 </div>
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Time:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.collectionTime || '........................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.collectionTime}
+                    onChange={(e) => handleInputChange('collectionTime', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="........................"
+                  />
                 </div>
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Collection Location:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.collectionLocation || '........................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.collectionLocation}
+                    onChange={(e) => handleInputChange('collectionLocation', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="........................"
+                  />
                 </div>
               </div>
             </div>
@@ -387,32 +529,60 @@ export default function ReferralFormPage() {
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Requested Tests:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestedTests1 || '................................................................................'}</span>
-                </div>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestedTests2 || '................................................................................'}</span>
-                </div>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestedTests3 || '................................................................................'}</span>
-                </div>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestedTests4 || '................................................................................'}</span>
-                </div>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.requestedTests5 || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.requestedTests1}
+                  onChange={(e) => handleInputChange('requestedTests1', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0 mb-1 print:mb-0"
+                  placeholder="................................................................................"
+                />
+                <input
+                  type="text"
+                  value={formData.requestedTests2}
+                  onChange={(e) => handleInputChange('requestedTests2', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0 mb-1 print:mb-0"
+                  placeholder="................................................................................"
+                />
+                <input
+                  type="text"
+                  value={formData.requestedTests3}
+                  onChange={(e) => handleInputChange('requestedTests3', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0 mb-1 print:mb-0"
+                  placeholder="................................................................................"
+                />
+                <input
+                  type="text"
+                  value={formData.requestedTests4}
+                  onChange={(e) => handleInputChange('requestedTests4', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0 mb-1 print:mb-0"
+                  placeholder="................................................................................"
+                />
+                <input
+                  type="text"
+                  value={formData.requestedTests5}
+                  onChange={(e) => handleInputChange('requestedTests5', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Clinical Indication (Symptoms/Diagnosi):
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.clinicalIndication1 || '................................................................................'}</span>
-                </div>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.clinicalIndication2 || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.clinicalIndication1}
+                  onChange={(e) => handleInputChange('clinicalIndication1', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0 mb-1 print:mb-0"
+                  placeholder="................................................................................"
+                />
+                <input
+                  type="text"
+                  value={formData.clinicalIndication2}
+                  onChange={(e) => handleInputChange('clinicalIndication2', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
             </div>
           </div>
@@ -428,26 +598,38 @@ export default function ReferralFormPage() {
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Date of Submission:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.submissionDate || '........................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.submissionDate}
+                    onChange={(e) => handleInputChange('submissionDate', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="........................"
+                  />
                 </div>
                 <div className="flex-1">
                   <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                     Time:
                   </label>
-                  <div className="form-field-line">
-                    <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.submissionTime || '........................'}</span>
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.submissionTime}
+                    onChange={(e) => handleInputChange('submissionTime', e.target.value)}
+                    className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                    placeholder="........................"
+                  />
                 </div>
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-black mb-0 print:text-[9px] leading-none">
                   Any special Instructions:
                 </label>
-                <div className="form-field-line">
-                  <span className="text-black text-[11px] print:text-[9px] leading-none">{formData.specialInstructions || '................................................................................'}</span>
-                </div>
+                <input
+                  type="text"
+                  value={formData.specialInstructions}
+                  onChange={(e) => handleInputChange('specialInstructions', e.target.value)}
+                  className="form-field-line w-full bg-transparent border-none outline-none text-black text-[11px] print:text-[9px] leading-none p-0"
+                  placeholder="................................................................................"
+                />
               </div>
             </div>
           </div>
