@@ -4,9 +4,6 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import TestCard from '@/components/TestCard';
 import { testCatalog } from '@/data/tests';
-import StructuredData from '@/components/StructuredData';
-
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
 
 export default function TestCatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,18 +14,7 @@ export default function TestCatalogPage() {
   );
 
   return (
-    <>
-      <StructuredData
-        type="BreadcrumbList"
-        data={{
-          items: [
-            { name: 'Home', url: siteUrl },
-            { name: 'Services', url: `${siteUrl}/services` },
-            { name: 'Test Catalog', url: `${siteUrl}/services/test-catalog` },
-          ],
-        }}
-      />
-      <main className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
+    <main className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <header className="mb-8">
