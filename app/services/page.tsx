@@ -1,9 +1,38 @@
 import Link from 'next/link';
 import { Microscope, Dna, Users, ArrowRight } from 'lucide-react';
+import type { Metadata } from "next";
+import StructuredData from "@/components/StructuredData";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
+export const metadata: Metadata = {
+  title: "Services - Comprehensive Diagnostic Testing & Pathology Services",
+  description: "Comprehensive diagnostic services from routine testing to specialized molecular diagnostics. Browse our test catalog, specialized expertise in endocrinology, genetics, and consultative services for healthcare providers.",
+  keywords: "diagnostic services, pathology services, test catalog, molecular diagnostics, endocrinology testing, genetic testing, consultative services, medical lab services",
+  openGraph: {
+    title: "Diagnostic Services - Medline Pathocare",
+    description: "Comprehensive diagnostic services from routine testing to specialized molecular diagnostics. Browse our extensive test catalog.",
+    url: `${siteUrl}/services`,
+    images: ['/logo.png'],
+  },
+  alternates: {
+    canonical: `${siteUrl}/services`,
+  },
+};
 
 export default function ServicesPage() {
   return (
-    <div className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
+    <>
+      <StructuredData
+        type="BreadcrumbList"
+        data={{
+          items: [
+            { name: 'Home', url: siteUrl },
+            { name: 'Services', url: `${siteUrl}/services` },
+          ],
+        }}
+      />
+      <div className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">

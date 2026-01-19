@@ -26,11 +26,12 @@ export default function Navigation() {
             <div className="relative w-12 h-12 sm:w-16 sm:h-16">
               <Image
                 src="/logo.png"
-                alt="Medline Pathocare Logo"
+                alt="Medline Pathocare - Diagnostic Laboratory Logo"
                 width={64}
                 height={64}
                 className="object-contain"
                 priority
+                sizes="64px"
               />
             </div>
             <div className="flex flex-col">

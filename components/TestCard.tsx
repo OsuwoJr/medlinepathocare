@@ -31,9 +31,11 @@ export default function TestCard({ test }: TestCardProps) {
           {test.image ? (
             <Image
               src={test.image}
-              alt={test.title}
+              alt={`${test.title} - Diagnostic test image at Medline Pathocare`}
               fill
               className="object-cover"
+              loading="lazy"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-primary-100 dark:bg-primary-900/30">

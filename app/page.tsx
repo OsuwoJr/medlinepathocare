@@ -1,12 +1,32 @@
 import Image from "next/image";
 import { Microscope, Dna, Shield, Clock, Users, FileText, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import type { Metadata } from "next";
+import StructuredData from "@/components/StructuredData";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
+export const metadata: Metadata = {
+  title: "Home - Leading Diagnostic Laboratory in Nairobi, Kenya",
+  description: "Medline Pathocare is a KMLTTB-accredited referral laboratory in Roysambu, Nairobi, providing ultra-accurate diagnostic services including endocrinology, molecular diagnostics, and advanced pathology. Serving 20+ clinical partners with comprehensive test catalog.",
+  keywords: "pathology lab Nairobi, diagnostic services Kenya, medical testing Roysambu, accredited laboratory, KMLTTB certified, endocrinology testing, molecular diagnostics",
+  openGraph: {
+    title: "Medline Pathocare - Leading Diagnostic Laboratory in Nairobi",
+    description: "KMLTTB-accredited referral laboratory providing ultra-accurate, timely diagnostic insights. Specialized in endocrinology, molecular diagnostics, and advanced pathology services.",
+    url: siteUrl,
+    images: ['/logo.png'],
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+};
 
 export default function Home() {
   return (
     <main className="min-h-screen">
+      <StructuredData type="MedicalBusiness" />
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-50 to-white dark:from-gray-900 dark:to-gray-800 py-20 px-4">
+      <section aria-label="Hero section" className="bg-gradient-to-br from-primary-50 to-white dark:from-gray-900 dark:to-gray-800 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1 text-center md:text-left">
@@ -38,11 +58,12 @@ export default function Home() {
               <div className="relative w-full max-w-md">
                 <Image
                   src="/logo.png"
-                  alt="Medline Pathocare Logo"
+                  alt="Medline Pathocare - Leading Diagnostic Laboratory in Nairobi, Kenya - KMLTTB Accredited"
                   width={500}
                   height={500}
                   className="object-contain"
                   priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               </div>
             </div>
@@ -51,7 +72,7 @@ export default function Home() {
       </section>
 
       {/* Mission & Vision Section */}
-      <section id="about" className="py-20 px-4 bg-white dark:bg-gray-900">
+      <section id="about" aria-label="About Medline Pathocare" className="py-20 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">
@@ -61,22 +82,22 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 mb-16">
-            <div className="bg-primary-50 dark:bg-primary-900/20 p-8 rounded-lg">
+            <article className="bg-primary-50 dark:bg-primary-900/20 p-8 rounded-lg">
               <h3 className="text-2xl font-bold text-primary-700 dark:text-primary-400 mb-4">
                 Our Vision
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 To be the indispensable partner in diagnostic medicine, leveraging pioneering technology and collaborative expertise to illuminate the path to precise patient care.
               </p>
-            </div>
-            <div className="bg-accent-50 dark:bg-accent-900/20 p-8 rounded-lg">
+            </article>
+            <article className="bg-accent-50 dark:bg-accent-900/20 p-8 rounded-lg">
               <h3 className="text-2xl font-bold text-accent-700 dark:text-accent-400 mb-4">
                 Our Mission
               </h3>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 To provide our network of clinicians with ultra-accurate, timely, and actionable diagnostic insights. We achieve this by relentlessly pursuing innovation in our testing methodologies, fostering a culture of scientific rigor, and delivering unparalleled support to empower fellow healthcare providers in making confident, life-changing decisions for their patients.
               </p>
-            </div>
+            </article>
           </div>
 
           {/* History */}
@@ -123,7 +144,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+      <section id="services" aria-label="Our Services" className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">
@@ -181,7 +202,7 @@ export default function Home() {
       </section>
 
       {/* For Providers Section */}
-      <section id="providers" className="py-20 px-4 bg-white dark:bg-gray-900">
+      <section id="providers" aria-label="Information for Healthcare Providers" className="py-20 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">
@@ -237,7 +258,7 @@ export default function Home() {
       </section>
 
       {/* Quality & Compliance Section */}
-      <section id="quality" className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
+      <section id="quality" aria-label="Quality Assurance and Compliance" className="py-20 px-4 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">
@@ -287,7 +308,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 bg-white dark:bg-gray-900">
+      <section id="contact" aria-label="Contact Information" className="py-20 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">

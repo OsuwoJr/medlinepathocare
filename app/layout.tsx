@@ -2,13 +2,58 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import StructuredData from "@/components/StructuredData";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+const siteName = 'Medline Pathocare';
+const defaultTitle = 'Medline Pathocare - Your Trusted Partner in Diagnostics';
+const defaultDescription = 'Leading referral laboratory providing ultra-accurate, timely, and actionable diagnostic insights. Specialized in endocrinology, molecular diagnostics, and advanced pathology services. Accredited by KMLTTB, serving Nairobi, Kenya.';
+
 export const metadata: Metadata = {
-  title: "Medline Pathocare - Your Trusted Partner in Diagnostics",
-  description: "Leading referral laboratory providing ultra-accurate, timely, and actionable diagnostic insights. Specialized in endocrinology, molecular diagnostics, and advanced pathology services.",
-  keywords: "pathology, diagnostics, laboratory, medical testing, Nairobi, Kenya",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: defaultTitle,
+    template: `%s | ${siteName}`,
+  },
+  description: defaultDescription,
+  keywords: [
+    'pathology laboratory',
+    'diagnostic services',
+    'medical testing',
+    'laboratory services',
+    'Nairobi pathology lab',
+    'Kenya diagnostics',
+    'endocrinology testing',
+    'molecular diagnostics',
+    'pathology services',
+    'clinical laboratory',
+    'medical lab tests',
+    'blood tests',
+    'KMLTTB accredited',
+    'Roysambu laboratory',
+    'referral laboratory',
+    'genetic testing',
+    'infectious disease testing',
+    'cancer screening',
+    'hormone testing',
+    'biochemistry tests',
+    'hematology tests',
+    'microbiology tests',
+    'homecare services',
+    'specimen collection',
+    'test catalog',
+    'diagnostic insights',
+  ],
+  authors: [{ name: 'Medline Pathocare', url: siteUrl }],
+  creator: 'Medline Pathocare',
+  publisher: 'Medline Pathocare',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -24,6 +69,50 @@ export const metadata: Metadata = {
     ],
   },
   manifest: '/site.webmanifest',
+  openGraph: {
+    type: 'website',
+    locale: 'en_KE',
+    url: siteUrl,
+    siteName: siteName,
+    title: defaultTitle,
+    description: defaultDescription,
+    images: [
+      {
+        url: '/logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'Medline Pathocare - Diagnostic Laboratory',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: defaultTitle,
+    description: defaultDescription,
+    images: ['/logo.png'],
+    creator: '@medlinepathocare',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    // Add your verification codes here when available
+    // google: 'your-google-verification-code',
+    // yandex: 'your-yandex-verification-code',
+    // yahoo: 'your-yahoo-verification-code',
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
+  category: 'medical',
 };
 
 export default function RootLayout({
@@ -33,6 +122,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <StructuredData type="Organization" />
+        <StructuredData type="WebSite" />
+      </head>
       <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>

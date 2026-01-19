@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Search } from 'lucide-react';
 import TestCard from '@/components/TestCard';
 import { testCatalog } from '@/data/tests';
+import StructuredData from '@/components/StructuredData';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
 
 export default function TestCatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,10 +17,21 @@ export default function TestCatalogPage() {
   );
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
+    <>
+      <StructuredData
+        type="BreadcrumbList"
+        data={{
+          items: [
+            { name: 'Home', url: siteUrl },
+            { name: 'Services', url: `${siteUrl}/services` },
+            { name: 'Test Catalog', url: `${siteUrl}/services/test-catalog` },
+          ],
+        }}
+      />
+      <main className="min-h-screen py-20 px-4 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <header className="mb-8">
           <h1 className="text-4xl font-bold text-primary-700 dark:text-primary-400 mb-4">
             Test Catalog
           </h1>
@@ -36,28 +50,28 @@ export default function TestCatalogPage() {
               className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-        </div>
+        </header>
 
         {/* Test Count */}
-        <div className="mb-6 text-gray-600 dark:text-gray-400">
+        <div className="mb-6 text-gray-600 dark:text-gray-400" aria-live="polite" aria-atomic="true">
           Showing {filteredTests.length} of {testCatalog.length} tests
         </div>
 
         {/* Test Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section aria-label="Available diagnostic tests" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredTests.map((test) => (
             <TestCard key={test.id} test={test} />
           ))}
-        </div>
+        </section>
 
         {filteredTests.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12" role="status" aria-live="polite">
             <p className="text-gray-600 dark:text-gray-400 text-lg">
               No tests found matching &quot;{searchQuery}&quot;
             </p>
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }
