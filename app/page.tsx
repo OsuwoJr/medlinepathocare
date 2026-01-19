@@ -323,8 +323,14 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
                 Phone
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Contact us via phone for immediate assistance
+              <Link 
+                href="tel:+254796168900"
+                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium block mb-2"
+              >
+                +254 796 168 900
+              </Link>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Call us for immediate assistance
               </p>
             </div>
 
@@ -333,7 +339,13 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
                 Email
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <Link 
+                href="mailto:medlinepathocarelab@gmail.com"
+                className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium block mb-2 break-all text-sm"
+              >
+                medlinepathocarelab@gmail.com
+              </Link>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Send us an email with your inquiries
               </p>
             </div>
@@ -343,8 +355,11 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
                 Location
               </h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 font-medium mb-2">
                 Roysambu, Nairobi, Kenya
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                KMLTTB Accredited Laboratory
               </p>
             </div>
           </div>

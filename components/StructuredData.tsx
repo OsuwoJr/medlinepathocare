@@ -21,8 +21,8 @@ export default function StructuredData({ type, data }: StructuredDataProps) {
         addressRegion: 'Nairobi',
         addressCountry: 'KE',
       },
-      telephone: '+254-XXX-XXXXXX', // Update with actual phone number
-      email: 'info@medlinepathocare.com', // Update with actual email
+      telephone: '+254796168900',
+      email: 'medlinepathocarelab@gmail.com',
       priceRange: '$$',
       medicalSpecialty: [
         'Pathology',
@@ -73,7 +73,7 @@ export default function StructuredData({ type, data }: StructuredDataProps) {
           },
           contactPoint: {
             '@type': 'ContactPoint',
-            telephone: '+254-XXX-XXXXXX',
+            telephone: '+254796168900',
             contactType: 'Customer Service',
             areaServed: 'KE',
             availableLanguage: 'English',
