@@ -104,8 +104,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add your verification codes here when available
-    // google: 'your-google-verification-code',
+    google: 'VsUzPHt8swBIepWVPXWennwT7Dgd67Na6dzYl3QuWFs',
     // yandex: 'your-yandex-verification-code',
     // yahoo: 'your-yahoo-verification-code',
   },
