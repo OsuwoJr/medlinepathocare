@@ -158,12 +158,13 @@ export default function Home() {
 
           <div className="grid md:grid-cols-3 gap-8">
             <Link href="/services/test-catalog" className="group">
-              <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow h-full">
-                <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                  <Microscope className="text-primary-600 dark:text-primary-400" size={32} />
+              <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-xl hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 h-full">
+                <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Microscope className="text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300" size={32} />
                 </div>
-                <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors">
+                <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
                   Test Catalog
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   Detailed, searchable list of all available tests, including test format, specimen collection requirements, handling procedures, and turnaround times (TAT).
@@ -174,29 +175,41 @@ export default function Home() {
               </div>
             </Link>
 
-            <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                <Dna className="text-primary-600 dark:text-primary-400" size={32} />
+            <Link href="/services/specialized-expertise" className="group">
+              <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-xl hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 h-full">
+                <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Dna className="text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300" size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
+                  Specialized Expertise
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  Highlighting specific areas of specialization including genetic testing, toxicology, molecular diagnostics, and how these services stand out.
+                </p>
+                <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform opacity-0 group-hover:opacity-100">
+                  Learn More <ArrowRight className="ml-2" size={20} />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4">
-                Specialized Expertise
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Highlighting specific areas of specialization including genetic testing, toxicology, molecular diagnostics, and how these services stand out.
-              </p>
-            </div>
+            </Link>
 
-            <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
-              <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                <Users className="text-primary-600 dark:text-primary-400" size={32} />
+            <Link href="/services/consultative-services" className="group">
+              <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-xl hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 h-full">
+                <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <Users className="text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300" size={32} />
+                </div>
+                <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
+                  Consultative Services
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={20} />
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  Supporting providers with test selection and result interpretation to ensure optimal patient care.
+                </p>
+                <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform opacity-0 group-hover:opacity-100">
+                  Learn More <ArrowRight className="ml-2" size={20} />
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-4">
-                Consultative Services
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Supporting providers with test selection and result interpretation to ensure optimal patient care.
-              </p>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -212,35 +225,51 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-              <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
-              <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
-                Specimen Guides
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Detailed resources on proper collection, packaging, and transportation protocols.
-              </p>
-            </div>
+            <Link href="/providers/specimen-guides" className="group">
+              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:shadow-lg hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
+                <FileText className="text-primary-600 dark:text-primary-400 mb-4 group-hover:scale-110 transition-transform duration-300" size={32} />
+                <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
+                  Specimen Guides
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={18} />
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
+                  Detailed resources on proper collection, packaging, and transportation protocols.
+                </p>
+                <span className="text-primary-600 dark:text-primary-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Click to access →
+                </span>
+              </div>
+            </Link>
 
-            <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-              <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
-              <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2">
-                Supply Ordering
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Simple system for ordering necessary supplies like specimen labels and shipping materials.
-              </p>
-            </div>
+            <Link href="/providers/supply-ordering" className="group">
+              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:shadow-lg hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
+                <FileText className="text-primary-600 dark:text-primary-400 mb-4 group-hover:scale-110 transition-transform duration-300" size={32} />
+                <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
+                  Supply Ordering
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={18} />
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
+                  Simple system for ordering necessary supplies like specimen labels and shipping materials.
+                </p>
+                <span className="text-primary-600 dark:text-primary-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Click to access →
+                </span>
+              </div>
+            </Link>
 
             <Link href="/providers/referral-form" className="group">
-              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors cursor-pointer">
-                <FileText className="text-primary-600 dark:text-primary-400 mb-4" size={32} />
-                <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors">
+              <div className="p-6 bg-primary-50 dark:bg-primary-900/20 rounded-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:shadow-lg hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 relative">
+                <FileText className="text-primary-600 dark:text-primary-400 mb-4 group-hover:scale-110 transition-transform duration-300" size={32} />
+                <h3 className="text-lg font-semibold text-primary-700 dark:text-primary-400 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-300 transition-colors flex items-center gap-2">
                   Referral Forms
+                  <ArrowRight className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" size={18} />
                 </h3>
-                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
                   Easily accessible and simple online or printable referral forms.
                 </p>
+                <span className="text-primary-600 dark:text-primary-400 text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  Click to access →
+                </span>
               </div>
             </Link>
 
