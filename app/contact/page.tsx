@@ -4,8 +4,8 @@ import { Phone, Mail, MapPin, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
-const phoneNumber = '+254796168900';
-const email = 'medlinepathocarelab@gmail.com';
+const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER || '+254796168900';
+const email = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'medlinepathocarelab@gmail.com';
 
 export const metadata: Metadata = {
   title: "Contact Us - Medline Pathocare Diagnostic Laboratory",

@@ -1,3 +1,5 @@
+import Script from 'next/script';
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
 
 interface StructuredDataProps {
@@ -121,7 +123,8 @@ export default function StructuredData({ type, data }: StructuredDataProps) {
   if (!structuredData) return null;
 
   return (
-    <script
+    <Script
+      id={`structured-data-${type}`}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
     />

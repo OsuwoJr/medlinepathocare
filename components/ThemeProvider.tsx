@@ -23,12 +23,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [fontSize, setFontSizeState] = useState<FontSize>('base');
   const [mounted, setMounted] = useState(false);
 
+  // Validation functions for localStorage values
+  const validateTheme = (value: string | null): Theme | null => {
+    if (value === 'light' || value === 'dark') return value as Theme;
+    return null;
+  };
+
+  const validateContrast = (value: string | null): Contrast | null => {
+    if (value === 'normal' || value === 'high') return value as Contrast;
+    return null;
+  };
+
+  const validateFontSize = (value: string | null): FontSize | null => {
+    if (value === 'base' || value === 'large' || value === 'xl') return value as FontSize;
+    return null;
+  };
+
   useEffect(() => {
     setMounted(true);
-    // Load preferences from localStorage
-    const savedTheme = localStorage.getItem('theme') as Theme | null;
-    const savedContrast = localStorage.getItem('contrast') as Contrast | null;
-    const savedFontSize = localStorage.getItem('fontSize') as FontSize | null;
+    // Load preferences from localStorage with validation
+    const savedTheme = validateTheme(localStorage.getItem('theme'));
+    const savedContrast = validateContrast(localStorage.getItem('contrast'));
+    const savedFontSize = validateFontSize(localStorage.getItem('fontSize'));
 
     if (savedTheme) setTheme(savedTheme);
     if (savedContrast) setContrast(savedContrast);

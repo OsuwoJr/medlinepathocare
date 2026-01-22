@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useRef } from 'react';
 import { X } from 'lucide-react';
+import { bookingSchema, type BookingFormData } from '@/lib/validation';
 
 interface Test {
   id: string;
@@ -25,6 +26,10 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  
+  // Rate limiting
+  const lastSubmitTime = useRef<number>(0);
+  const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds
 
   if (!isOpen) return null;
 
@@ -33,9 +38,35 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
     setIsSubmitting(true);
     setSubmitStatus('idle');
 
+    // Rate limiting check
+    const now = Date.now();
+    if (now - lastSubmitTime.current < MIN_SUBMIT_INTERVAL) {
+      alert('Please wait a few seconds before submitting again.');
+      setIsSubmitting(false);
+      return;
+    }
+    lastSubmitTime.current = now;
+
+    // Validate input
+    const validationResult = bookingSchema.safeParse(formData);
+    if (!validationResult.success) {
+      setSubmitStatus('error');
+      setIsSubmitting(false);
+      // Only log validation errors in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Validation errors:', validationResult.error.issues);
+      }
+      return;
+    }
+
     try {
       if (formData.preferredContact === 'whatsapp') {
-        // Format booking details for WhatsApp message
+        // Sanitize inputs before using
+        const sanitizedName = formData.name.trim().substring(0, 100);
+        const sanitizedEmail = formData.email?.trim().substring(0, 255) || '';
+        const sanitizedPhone = formData.phone.trim().substring(0, 15);
+        const sanitizedMessage = formData.message?.trim().substring(0, 1000) || '';
+
         const whatsappMessage = `*Test Booking Request*
 
 *Test Details:*
@@ -44,24 +75,21 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
 • Price: KES ${test.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
 
 *Customer Details:*
-• Name: ${formData.name}
-• Email: ${formData.email}
-• Phone: ${formData.phone}
+• Name: ${sanitizedName}
+• Email: ${sanitizedEmail}
+• Phone: ${sanitizedPhone}
 
-${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booking Date: ${new Date().toLocaleString('en-KE', { 
+${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booking Date: ${new Date().toLocaleString('en-KE', { 
           dateStyle: 'full', 
           timeStyle: 'short' 
         })}`;
 
-        // Encode message for URL
         const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappNumber = '254796168900'; // Remove + for URL
+        const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '254796168900';
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
 
-        // Open WhatsApp in new tab/window
-        window.open(whatsappUrl, '_blank');
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 
-        // Show success and close modal
         setSubmitStatus('success');
         setFormData({
           name: '',
@@ -75,8 +103,13 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
           setSubmitStatus('idle');
         }, 2000);
       } else {
-        // Email submission via Formspree
-        const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT || 'YOUR_FORMSPREE_ENDPOINT';
+        const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+        
+        if (!formspreeEndpoint) {
+          setSubmitStatus('error');
+          setIsSubmitting(false);
+          return;
+        }
         
         const response = await fetch(formspreeEndpoint, {
           method: 'POST',
@@ -87,11 +120,11 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
             testName: test.title,
             testId: test.id,
             testPrice: test.price,
-            customerName: formData.name,
-            customerEmail: formData.email,
-            customerPhone: formData.phone,
+            customerName: formData.name.trim(),
+            customerEmail: formData.email?.trim() || '',
+            customerPhone: formData.phone.trim(),
             preferredContact: formData.preferredContact,
-            message: formData.message,
+            message: formData.message?.trim() || '',
             bookingDate: new Date().toISOString(),
           }),
         });
@@ -114,7 +147,11 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
         }
       }
     } catch (error) {
-      console.error('Booking submission error:', error);
+      // Secure error handling - only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Booking submission error:', error);
+      }
+      // In production, don't expose error details
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -154,6 +191,7 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
                 type="text"
                 id="name"
                 required
+                maxLength={100}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -167,6 +205,7 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
               <input
                 type="email"
                 id="email"
+                maxLength={255}
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -181,6 +220,9 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
                 type="tel"
                 id="phone"
                 required
+                maxLength={15}
+                pattern="^(0[17]\d{8}|0[2-9]\d{8}|\+254[17]\d{8}|\+254[2-9]\d{8}|254[17]\d{8}|254[2-9]\d{8})$"
+                placeholder="0751406993 or +254751406993"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -224,6 +266,7 @@ ${formData.message ? `*Additional Message:*\n${formData.message}\n\n` : ''}Booki
               <textarea
                 id="message"
                 rows={3}
+                maxLength={1000}
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ArrowLeft, Users, MessageSquare, BookOpen, FileText, Phone, Mail, CheckCircle, Clock, Target, Lightbulb, Calendar, X, Loader2, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,6 +22,8 @@ export default function ConsultativeServicesPage() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+
   const services = [
     {
       icon: BookOpen,
@@ -108,20 +110,39 @@ export default function ConsultativeServicesPage() {
     }
   ];
 
-  const phoneNumber = '+254796168900';
-  const emailAddress = 'medlinepathocarelab@gmail.com';
+  const phoneNumber = process.env.NEXT_PUBLIC_PHONE_NUMBER || '+254796168900';
+  const emailAddress = process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'medlinepathocarelab@gmail.com';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '254796168900';
 
-  const handlePhoneClick = () => {
+  const handlePhoneClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     setShowPhoneOptions(true);
-  };
+  }, []);
 
-  const handleEmailClick = () => {
-    window.location.href = `mailto:${emailAddress}?subject=Email Consultation`;
-  };
+  const handleEmailClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Open email client with mailto link
+    const mailtoLink = `mailto:${emailAddress}?subject=Email Consultation Request`;
+    
+    // Create a temporary anchor element to trigger mailto
+    const link = document.createElement('a');
+    link.href = mailtoLink;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Email client should open automatically via mailto link
+  }, [emailAddress]);
 
-  const handleScheduleClick = () => {
+  const handleScheduleClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
     setShowScheduleModal(true);
-  };
+  }, []);
 
   const validateScheduleForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -171,7 +192,15 @@ export default function ConsultativeServicesPage() {
         message: scheduleForm.message
       };
 
-      const response = await fetch('https://formspree.io/f/xpqpaewe', {
+      const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_CONSULTATION_ENDPOINT;
+      
+      if (!formspreeEndpoint) {
+        setSubmitStatus('error');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await fetch(formspreeEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -200,7 +229,10 @@ export default function ConsultativeServicesPage() {
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      // Secure error handling - only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form submission error:', error);
+      }
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
@@ -321,20 +353,26 @@ export default function ConsultativeServicesPage() {
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Phone Consultation */}
-            <div
-              onClick={handlePhoneClick}
-              className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowPhoneOptions(true);
+              }}
+              type="button"
+              aria-label="Open phone consultation options"
+              className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 w-full text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:scale-[0.98] relative z-10"
             >
-              <div className="bg-primary-100 dark:bg-primary-900/30 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+              <div className="bg-primary-100 dark:bg-primary-900/30 w-14 h-14 rounded-full flex items-center justify-center mb-4 pointer-events-none">
                 <Phone className="text-primary-600 dark:text-primary-400" size={24} />
               </div>
-              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-3">
+              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-3 pointer-events-none">
                 Phone Consultation
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 pointer-events-none">
                 Direct phone access to our laboratory experts during business hours for immediate consultation needs.
               </p>
-              <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700">
+              <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700 pointer-events-none">
                 <p className="text-sm font-semibold text-primary-700 dark:text-primary-400 text-center">
                   {phoneNumber}
                 </p>
@@ -342,13 +380,10 @@ export default function ConsultativeServicesPage() {
                   Click for options
                 </p>
               </div>
-            </div>
+            </button>
 
             {/* Email Consultation */}
-            <div
-              onClick={handleEmailClick}
-              className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1"
-            >
+            <div className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800">
               <div className="bg-primary-100 dark:bg-primary-900/30 w-14 h-14 rounded-full flex items-center justify-center mb-4">
                 <Mail className="text-primary-600 dark:text-primary-400" size={24} />
               </div>
@@ -358,31 +393,79 @@ export default function ConsultativeServicesPage() {
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                 Send detailed case information via email for comprehensive review and written consultation response.
               </p>
-              <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700">
-                <p className="text-sm font-semibold text-primary-700 dark:text-primary-400 text-center break-all">
-                  {emailAddress}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-1">
-                  Click to email
-                </p>
+              <div className="mt-4 space-y-2">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent('Email Consultation Request')}&body=${encodeURIComponent('Hello, I would like to request an email consultation.')}`;
+                    // Open mailto link
+                    window.location.href = mailtoLink;
+                  }}
+                  type="button"
+                  className="w-full block p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors text-center cursor-pointer active:scale-[0.98]"
+                  aria-label={`Send email to ${emailAddress}`}
+                >
+                  <p className="text-sm font-semibold text-primary-700 dark:text-primary-400 break-all">
+                    {emailAddress}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Click to open email client
+                  </p>
+                </button>
+                <button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      await navigator.clipboard.writeText(emailAddress);
+                      alert(`Email address copied to clipboard: ${emailAddress}`);
+                    } catch (err) {
+                      // Fallback for older browsers
+                      const textArea = document.createElement('textarea');
+                      textArea.value = emailAddress;
+                      textArea.style.position = 'fixed';
+                      textArea.style.opacity = '0';
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      try {
+                        document.execCommand('copy');
+                        alert(`Email address copied to clipboard: ${emailAddress}`);
+                      } catch (fallbackErr) {
+                        alert(`Please copy this email address: ${emailAddress}`);
+                      }
+                      document.body.removeChild(textArea);
+                    }
+                  }}
+                  type="button"
+                  className="w-full p-2 bg-primary-600 dark:bg-primary-500 text-white text-xs font-semibold rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors"
+                >
+                  Copy Email Address
+                </button>
               </div>
             </div>
 
             {/* In-Person Consultation */}
-            <div
-              onClick={handleScheduleClick}
-              className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1"
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowScheduleModal(true);
+              }}
+              type="button"
+              aria-label="Schedule an in-person consultation"
+              className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 w-full text-left focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 active:scale-[0.98] relative z-10"
             >
-              <div className="bg-primary-100 dark:bg-primary-900/30 w-14 h-14 rounded-full flex items-center justify-center mb-4">
+              <div className="bg-primary-100 dark:bg-primary-900/30 w-14 h-14 rounded-full flex items-center justify-center mb-4 pointer-events-none">
                 <MessageSquare className="text-primary-600 dark:text-primary-400" size={24} />
               </div>
-              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-3">
+              <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400 mb-3 pointer-events-none">
                 In-Person Consultation
               </h3>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 pointer-events-none">
                 Schedule in-person meetings with our pathologists for complex case discussions and collaborative planning.
               </p>
-              <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700">
+              <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-700 pointer-events-none">
                 <p className="text-sm font-semibold text-primary-700 dark:text-primary-400 text-center">
                   Contact us to schedule
                 </p>
@@ -390,11 +473,11 @@ export default function ConsultativeServicesPage() {
                   Click to schedule
                 </p>
               </div>
-            </div>
+            </button>
 
             {/* WhatsApp Consultation */}
             <a
-              href={`https://wa.me/254796168900?text=Hello, I would like to request a consultation.`}
+              href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to request a consultation.`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-lg shadow-lg p-6 border border-primary-200 dark:border-primary-800 cursor-pointer hover:shadow-xl transition-all transform hover:-translate-y-1 block"
@@ -422,10 +505,24 @@ export default function ConsultativeServicesPage() {
 
         {/* Phone Options Modal */}
         {showPhoneOptions && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4"
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowPhoneOptions(false);
+              }
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="phone-modal-title"
+          >
+            <div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 relative z-[10000]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-primary-700 dark:text-primary-400">
+                <h3 id="phone-modal-title" className="text-2xl font-bold text-primary-700 dark:text-primary-400">
                   Contact Options
                 </h3>
                 <button
@@ -461,7 +558,7 @@ export default function ConsultativeServicesPage() {
                   </div>
                 </a>
                 <a
-                  href={`https://wa.me/254796168900?text=Hello, I would like to request a consultation.`}
+                  href={`https://wa.me/${whatsappNumber}?text=Hello, I would like to request a consultation.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
@@ -481,10 +578,25 @@ export default function ConsultativeServicesPage() {
 
         {/* Schedule Modal */}
         {showScheduleModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full p-6 my-8">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4 overflow-y-auto"
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999 }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setShowScheduleModal(false);
+                setSubmitStatus('idle');
+              }
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="schedule-modal-title"
+          >
+            <div 
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full p-6 my-8 relative z-[10000]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-2xl font-bold text-primary-700 dark:text-primary-400 flex items-center gap-2">
+                <h3 id="schedule-modal-title" className="text-2xl font-bold text-primary-700 dark:text-primary-400 flex items-center gap-2">
                   <Calendar className="text-primary-600 dark:text-primary-400" size={28} />
                   Schedule In-Person Consultation
                 </h3>

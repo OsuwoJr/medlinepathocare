@@ -119,7 +119,15 @@ export default function SupplyOrderingPage() {
         totalQuantity: selectedItems.reduce((sum, item) => sum + item.quantity, 0),
       };
 
-      const response = await fetch('https://formspree.io/f/maqqnbao', {
+      const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_SUPPLY_ORDER_ENDPOINT;
+      
+      if (!formspreeEndpoint) {
+        setSubmitStatus('error');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await fetch(formspreeEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +156,10 @@ export default function SupplyOrderingPage() {
         setSubmitStatus('error');
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      // Secure error handling - only log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Form submission error:', error);
+      }
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
