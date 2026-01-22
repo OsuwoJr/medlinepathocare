@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Microscope, Dna, Shield, Clock, Users, FileText, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
+import { Microscope, Dna, Shield, Clock, Users, FileText, Phone, Mail, MapPin, ArrowRight, Github, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import StructuredData from "@/components/StructuredData";
@@ -421,8 +421,61 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-            <p>&copy; {new Date().getFullYear()} Medline Pathocare. All rights reserved.</p>
+          <div className="border-t border-gray-800 pt-8">
+            <div className="text-center text-gray-400 mb-4">
+              <p>&copy; {new Date().getFullYear()} Medline Pathocare. All rights reserved.</p>
+            </div>
+            <div className="flex items-center justify-center gap-6 mb-4 flex-wrap text-gray-400 text-sm">
+              <Link href="/privacy" className="hover:text-primary-400 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" className="hover:text-primary-400 transition-colors">
+                Terms of Service
+              </Link>
+              <Link href="/accessibility" className="hover:text-primary-400 transition-colors">
+                Accessibility
+              </Link>
+            </div>
+            <div className="text-center text-gray-500 text-sm">
+              <p className="mb-2">
+                Website developed by{' '}
+                <a
+                  href="https://github.com/OsuwoJr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+                >
+                  <Github size={16} />
+                  Osuwo Jr
+                </a>
+              </p>
+              <p className="flex items-center justify-center gap-4 flex-wrap">
+                <span>Contact:</span>
+                <a
+                  href="tel:+254790932575"
+                  className="text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+                >
+                  <Phone size={14} />
+                  Call
+                </a>
+                <a
+                  href="sms:+254790932575"
+                  className="text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+                >
+                  <MessageCircle size={14} />
+                  Text
+                </a>
+                <a
+                  href="https://wa.me/254790932575"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-400 hover:text-primary-300 transition-colors inline-flex items-center gap-1"
+                >
+                  <MessageCircle size={14} />
+                  WhatsApp
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </footer>
