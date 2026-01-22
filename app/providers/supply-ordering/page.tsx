@@ -195,7 +195,7 @@ export default function SupplyOrderingPage() {
                 Order Submitted Successfully!
               </h3>
               <p className="text-green-700 dark:text-green-400">
-                Your supply order has been received. We'll process it and contact you shortly to confirm delivery details.
+                Your supply order has been received. We&apos;ll process it and contact you shortly to confirm delivery details.
               </p>
             </div>
           </div>

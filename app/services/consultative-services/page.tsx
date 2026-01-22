@@ -502,7 +502,7 @@ export default function ConsultativeServicesPage() {
               {submitStatus === 'success' && (
                 <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg">
                   <p className="text-green-800 dark:text-green-300 font-semibold">
-                    ✓ Consultation request submitted successfully! We'll contact you shortly to confirm.
+                    ✓ Consultation request submitted successfully! We&apos;ll contact you shortly to confirm.
                   </p>
                 </div>
               )}
