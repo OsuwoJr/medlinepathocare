@@ -2,9 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, FileText, Scale, AlertCircle, CheckCircle, Shield } from 'lucide-react';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
 export const metadata: Metadata = {
   title: 'Terms of Service - Medline Pathocare',
   description: 'Terms of Service for Medline Pathocare - Terms and conditions for using our diagnostic laboratory services.',
+  alternates: {
+    canonical: `${siteUrl}/terms`,
+  },
 };
 
 export default function TermsOfServicePage() {

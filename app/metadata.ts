@@ -28,7 +28,7 @@ export function generateMetadata({
       description,
       url,
       siteName,
-      images: image ? [image] : ['/logo.png'],
+      images: image ? [image] : ['/og.png'],
       locale: 'en_KE',
       type: 'website',
     },
@@ -36,7 +36,7 @@ export function generateMetadata({
       card: 'summary_large_image',
       title: fullTitle,
       description,
-      images: image ? [image] : ['/logo.png'],
+      images: image ? [image] : ['/og.png'],
     },
     alternates: {
       canonical: url,

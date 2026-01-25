@@ -2,9 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Shield, Lock, Eye, FileText, Users, Database } from 'lucide-react';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
 export const metadata: Metadata = {
   title: 'Privacy Policy - Medline Pathocare',
   description: 'Privacy Policy for Medline Pathocare - How we collect, use, and protect your personal and health information.',
+  alternates: {
+    canonical: `${siteUrl}/privacy`,
+  },
 };
 
 export default function PrivacyPolicyPage() {

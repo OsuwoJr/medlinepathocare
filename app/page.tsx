@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: "Medline Pathocare - Leading Diagnostic Laboratory in Nairobi",
     description: "KMLTTB-accredited referral laboratory providing ultra-accurate, timely diagnostic insights. Specialized in endocrinology, molecular diagnostics, and advanced pathology services.",
     url: siteUrl,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: siteUrl,

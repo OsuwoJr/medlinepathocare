@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     title: "Diagnostic Services - Medline Pathocare",
     description: "Comprehensive diagnostic services from routine testing to specialized molecular diagnostics. Browse our extensive test catalog.",
     url: `${siteUrl}/services`,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: `${siteUrl}/services`,

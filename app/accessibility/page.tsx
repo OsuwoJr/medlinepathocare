@@ -2,9 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Accessibility, Eye, Type, Keyboard, CheckCircle } from 'lucide-react';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
 export const metadata: Metadata = {
   title: 'Accessibility Statement - Medline Pathocare',
   description: 'Accessibility features and commitment of Medline Pathocare to providing accessible diagnostic laboratory services.',
+  alternates: {
+    canonical: `${siteUrl}/accessibility`,
+  },
 };
 
 export default function AccessibilityPage() {

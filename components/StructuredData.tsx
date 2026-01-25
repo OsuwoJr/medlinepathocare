@@ -45,11 +45,6 @@ export default function StructuredData({ type, data }: StructuredDataProps) {
         name: 'Sir. Granton Trevar',
         jobTitle: 'Medical Laboratory Officer',
       },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        reviewCount: '50',
-      },
       sameAs: [
         // Add social media links when available
         // 'https://www.facebook.com/medlinepathocare',

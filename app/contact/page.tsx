@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title: "Contact Medline Pathocare - Diagnostic Laboratory",
     description: "Contact us for diagnostic services, test inquiries, and provider support. Located in Roysambu, Nairobi, Kenya.",
     url: `${siteUrl}/contact`,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: `${siteUrl}/contact`,

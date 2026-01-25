@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Blog & News - Medline Pathocare",
     description: "Latest news, health information, and updates from Medline Pathocare diagnostic laboratory.",
     url: `${siteUrl}/blog`,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: `${siteUrl}/blog`,

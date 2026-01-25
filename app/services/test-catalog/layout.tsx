@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "Test Catalog - Medline Pathocare Diagnostic Tests",
     description: "Comprehensive catalog of 55+ diagnostic tests including pricing, turnaround times, and specimen requirements.",
     url: `${siteUrl}/services/test-catalog`,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: `${siteUrl}/services/test-catalog`,

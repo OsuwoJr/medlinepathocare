@@ -1,7 +1,23 @@
-'use client';
-
 import { ArrowLeft, Dna, FlaskConical, Microscope, Shield, CheckCircle, Sparkles, Activity } from 'lucide-react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
+import StructuredData from '@/components/StructuredData';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
+
+export const metadata: Metadata = {
+  title: 'Specialized Expertise - Genetics, Toxicology & Molecular Diagnostics',
+  description: 'Explore Medline Pathocare’s specialized diagnostic expertise in genetic testing, toxicology, molecular diagnostics, and endocrinology. Advanced methodologies with expert interpretation in Nairobi, Kenya.',
+  alternates: {
+    canonical: `${siteUrl}/services/specialized-expertise`,
+  },
+  openGraph: {
+    title: 'Specialized Expertise - Medline Pathocare',
+    description: 'Advanced diagnostic capabilities in genetics, toxicology, molecular diagnostics, and endocrinology.',
+    url: `${siteUrl}/services/specialized-expertise`,
+    images: ['/og.png'],
+  },
+};
 
 export default function SpecializedExpertisePage() {
   const specializations = [
@@ -95,8 +111,19 @@ export default function SpecializedExpertisePage() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <>
+      <StructuredData
+        type="BreadcrumbList"
+        data={{
+          items: [
+            { name: 'Home', url: siteUrl },
+            { name: 'Services', url: `${siteUrl}/services` },
+            { name: 'Specialized Expertise', url: `${siteUrl}/services/specialized-expertise` },
+          ],
+        }}
+      />
+      <main className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-12">
           <Link 
@@ -256,7 +283,8 @@ export default function SpecializedExpertisePage() {
             </Link>
           </div>
         </div>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "About Medline Pathocare - Leading Diagnostic Laboratory",
     description: "Founded in 2025, Medline Pathocare is a KMLTTB-accredited referral laboratory providing ultra-accurate diagnostic services in Nairobi, Kenya.",
     url: `${siteUrl}/about`,
-    images: ['/logo.png'],
+    images: ['/og.png'],
   },
   alternates: {
     canonical: `${siteUrl}/about`,

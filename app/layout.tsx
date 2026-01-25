@@ -78,7 +78,7 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: '/logo.png',
+        url: '/og.png',
         width: 1200,
         height: 630,
         alt: 'Medline Pathocare - Diagnostic Laboratory',
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: defaultTitle,
     description: defaultDescription,
-    images: ['/logo.png'],
+    images: ['/og.png'],
     creator: '@medlinepathocare',
   },
   robots: {
@@ -107,9 +107,6 @@ export const metadata: Metadata = {
     google: 'VsUzPHt8swBIepWVPXWennwT7Dgd67Na6dzYl3QuWFs',
     // yandex: 'your-yandex-verification-code',
     // yahoo: 'your-yahoo-verification-code',
-  },
-  alternates: {
-    canonical: siteUrl,
   },
   category: 'medical',
 };
