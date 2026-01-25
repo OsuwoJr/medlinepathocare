@@ -144,6 +144,32 @@ export default function ConsultativeServicesPage() {
     setShowScheduleModal(true);
   }, []);
 
+  useEffect(() => {
+    const scrollToHash = () => {
+      if (typeof window === 'undefined') return;
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      const id = hash.replace('#', '');
+      const el = document.getElementById(id);
+      if (!el) return;
+
+      // Next.js App Router doesn't always scroll to hash on navigation,
+      // so we do it manually for a reliable UX.
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Ensure keyboard users land in the section context.
+      (el as HTMLElement).focus?.({ preventScroll: true });
+    };
+
+    // Try after first paint, and on subsequent hash changes.
+    const t = window.setTimeout(scrollToHash, 0);
+    window.addEventListener('hashchange', scrollToHash);
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener('hashchange', scrollToHash);
+    };
+  }, []);
+
   const validateScheduleForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -347,7 +373,7 @@ export default function ConsultativeServicesPage() {
         </div>
 
         {/* Consultation Methods */}
-        <div className="mb-12">
+        <div id="access" tabIndex={-1} className="mb-12 scroll-mt-24 focus:outline-none">
           <h2 className="text-3xl font-bold text-primary-700 dark:text-primary-400 mb-8 text-center">
             How to Access Our Consultative Services
           </h2>

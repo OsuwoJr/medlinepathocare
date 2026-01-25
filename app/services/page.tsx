@@ -65,15 +65,15 @@ export default function ServicesPage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Highlighting specific areas of specialization including genetic testing, toxicology, molecular diagnostics, and how these services stand out.
               </p>
-              <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform opacity-0 group-hover:opacity-100">
+              <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform">
                 Learn More <ArrowRight className="ml-2" size={20} />
               </div>
             </div>
           </Link>
 
           {/* Consultative Services Card */}
-          <Link href="/services/consultative-services" className="group">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-xl hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 cursor-pointer transform hover:-translate-y-1 h-full">
+          <div className="group">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg border-2 border-transparent hover:border-primary-400 dark:hover:border-primary-500 hover:shadow-xl hover:shadow-primary-200 dark:hover:shadow-primary-900/50 transition-all duration-300 transform hover:-translate-y-1 h-full">
               <div className="bg-primary-100 dark:bg-primary-900/30 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Users className="text-primary-600 dark:text-primary-400 group-hover:scale-110 transition-transform duration-300" size={32} />
               </div>
@@ -84,11 +84,22 @@ export default function ServicesPage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Supporting providers with test selection and result interpretation to ensure optimal patient care.
               </p>
-              <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform opacity-0 group-hover:opacity-100">
-                Learn More <ArrowRight className="ml-2" size={20} />
+              <div className="mt-6 flex flex-col gap-2">
+                <Link
+                  href="/services/consultative-services"
+                  className="inline-flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform w-fit"
+                >
+                  Learn more <ArrowRight className="ml-2" size={20} />
+                </Link>
+                <Link
+                  href="/services/consultative-services#access"
+                  className="inline-flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform w-fit"
+                >
+                  Choose consultation mode <ArrowRight className="ml-2" size={20} />
+                </Link>
               </div>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </div>
