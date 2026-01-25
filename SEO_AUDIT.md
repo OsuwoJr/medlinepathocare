@@ -8,27 +8,24 @@
 
 ## Current status (what’s done vs pending)
 
-### Done in code
-- **Canonical fix**: removed the global canonical from `app/layout.tsx` and added missing per-page canonicals.
-- **Client-page metadata fix**:
-  - `app/services/specialized-expertise/page.tsx` is now a Server Component with metadata + breadcrumbs.
-  - `app/services/consultative-services/page.tsx` is now a Server Component with metadata + breadcrumbs, UI moved to `app/services/consultative-services/ConsultativeServicesClient.tsx`.
-- **Structured data safety**: removed unverified `aggregateRating` from `components/StructuredData.tsx`.
-- **OG image**:
-  - `public/og.png` is present.
-  - Open Graph + Twitter metadata updated to use **`/og.png`** instead of `/logo.png` (global + page overrides + `app/metadata.ts` helper defaults).
+### Numbered checklist
 
-### Still pending (not yet accomplished)
-- **Set `NEXT_PUBLIC_SITE_URL` in Vercel** (even if it’s the same domain)
-  - Target value: `https://medlinepathocare.vercel.app`
-  - Reason: prevents future base-url drift and keeps structured data + sitemap + canonicals consistent if hosting/domains change.
-- **Thin/placeholder pages**
-  - `/about` and `/blog` are still thin placeholders.
-  - Options: publish content, or temporarily add `noindex` until ready.
-- **Post-deploy verification**
-  - Verify canonicals on key pages (view-source).
-  - Verify social preview caches pull `og.png` (Facebook debugger / X card validator).
-  - Submit/inspect in Google Search Console (sitemap + URL inspection).
+1. **DONE** — Remove global canonical from `app/layout.tsx` and ensure per-page canonicals exist where needed.
+2. **DONE** — Fix Client Component metadata limitations for key services pages:
+   - `app/services/specialized-expertise/page.tsx` converted to Server Component with metadata + breadcrumbs
+   - `app/services/consultative-services/page.tsx` converted to Server Component; UI moved to `app/services/consultative-services/ConsultativeServicesClient.tsx`
+3. **DONE** — Remove unverified `aggregateRating` from `components/StructuredData.tsx`.
+4. **DONE** — Add `public/og.png` (1200×630) and switch Open Graph/Twitter metadata defaults to `/og.png`.
+5. **DONE** — Set `NEXT_PUBLIC_SITE_URL` in Vercel (recommended even if unchanged):
+   - Value: `https://medlinepathocare.vercel.app`
+6. **DONE** — Address thin pages:
+   - Published real on-page content for `/about` and `/blog` (removed placeholders)
+7. **PENDING** — Post-deploy verification:
+   - Confirm canonicals per route (view-source)
+   - Refresh social preview caches (Facebook debugger / X card validator)
+   - Submit/inspect in Google Search Console (sitemap + URL inspection)
+
+**Not yet done items**: **6–7**
 
 ### Critical
 - **Incorrect canonical inheritance (duplicate signals)**
