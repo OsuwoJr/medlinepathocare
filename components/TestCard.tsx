@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import Image from 'next/image';
 import { Calendar } from 'lucide-react';
-import BookingModal from './BookingModal';
 
 interface Test {
   id: string;
@@ -18,14 +16,15 @@ interface Test {
 
 interface TestCardProps {
   test: Test;
+  isSelected?: boolean;
+  onToggleSelect?: (test: Test) => void;
+  onBook?: (test: Test) => void;
 }
 
-export default function TestCard({ test }: TestCardProps) {
-  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
-
+export default function TestCard({ test, isSelected = false, onToggleSelect, onBook }: TestCardProps) {
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full relative">
         {/* Image */}
         <div className="relative w-full h-48 bg-gray-100 dark:bg-gray-700">
           {test.image ? (
@@ -42,6 +41,22 @@ export default function TestCard({ test }: TestCardProps) {
               <div className="text-primary-600 dark:text-primary-400 text-4xl font-bold">
                 {test.title.charAt(0)}
               </div>
+            </div>
+          )}
+
+          {/* Multi-select checkbox */}
+          {onToggleSelect && (
+            <div className="absolute top-3 right-3">
+              <label className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-gray-900/80 px-3 py-1.5 shadow-sm ring-1 ring-black/5 dark:ring-white/10 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => onToggleSelect(test)}
+                  aria-label={`Select ${test.title}`}
+                  className="h-4 w-4"
+                />
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-200">Select</span>
+              </label>
             </div>
           )}
         </div>
@@ -84,7 +99,7 @@ export default function TestCard({ test }: TestCardProps) {
               </div>
             </div>
             <button
-              onClick={() => setIsBookingModalOpen(true)}
+              onClick={() => onBook?.(test)}
               className="w-full px-4 py-2 bg-primary-600 dark:bg-primary-500 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 font-medium"
             >
               <Calendar size={18} />
@@ -93,12 +108,6 @@ export default function TestCard({ test }: TestCardProps) {
           </div>
         </div>
       </div>
-
-      <BookingModal
-        test={test}
-        isOpen={isBookingModalOpen}
-        onClose={() => setIsBookingModalOpen(false)}
-      />
     </>
   );
 }

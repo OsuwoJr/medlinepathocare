@@ -47,7 +47,7 @@ export default function ServicesPage() {
                 Detailed, searchable list of all available tests, including test format, specimen collection requirements, handling procedures, and turnaround times (TAT).
               </p>
               <div className="flex items-center text-primary-600 dark:text-primary-400 font-semibold group-hover:translate-x-2 transition-transform">
-                View Catalog <ArrowRight className="ml-2" size={20} />
+                View catalog &amp; book tests <ArrowRight className="ml-2" size={20} />
               </div>
             </div>
           </Link>

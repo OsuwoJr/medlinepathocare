@@ -11,12 +11,12 @@ interface Test {
 }
 
 interface BookingModalProps {
-  test: Test;
+  tests: Test[];
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function BookingModal({ test, isOpen, onClose }: BookingModalProps) {
+export default function BookingModal({ tests, isOpen, onClose }: BookingModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,6 +32,10 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
   const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds
 
   if (!isOpen) return null;
+
+  const normalizedTests = (tests || []).filter(Boolean);
+  const totalPrice = normalizedTests.reduce((sum, t) => sum + (Number.isFinite(t.price) ? t.price : 0), 0);
+  const plural = normalizedTests.length === 1 ? '' : 's';
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -67,12 +71,23 @@ export default function BookingModal({ test, isOpen, onClose }: BookingModalProp
         const sanitizedPhone = formData.phone.trim().substring(0, 15);
         const sanitizedMessage = formData.message?.trim().substring(0, 1000) || '';
 
+        const testsBlock =
+          normalizedTests.length > 0
+            ? normalizedTests
+                .map(
+                  (t) =>
+                    `• ${t.title} (ID: ${t.id}) - KES ${t.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}`
+                )
+                .join('\n')
+            : '• (No tests selected)';
+
         const whatsappMessage = `*Test Booking Request*
 
 *Test Details:*
-• Test Name: ${test.title}
-• Test ID: ${test.id}
-• Price: KES ${test.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
+${testsBlock}
+
+*Total:*
+KES ${totalPrice.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
 
 *Customer Details:*
 • Name: ${sanitizedName}
@@ -117,9 +132,14 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            testName: test.title,
-            testId: test.id,
-            testPrice: test.price,
+            tests: normalizedTests.map((t) => ({
+              id: t.id,
+              title: t.title,
+              price: t.price,
+            })),
+            testNames: normalizedTests.map((t) => t.title).join(', '),
+            testIds: normalizedTests.map((t) => t.id).join(', '),
+            totalPrice,
             customerName: formData.name.trim(),
             customerEmail: formData.email?.trim() || '',
             customerPhone: formData.phone.trim(),
@@ -163,7 +183,7 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-2xl font-bold text-primary-700 dark:text-primary-400">
-            Book Test: {test.title}
+            {normalizedTests.length <= 1 ? 'Book Test' : `Book Test${plural}`} {normalizedTests.length === 1 ? `: ${normalizedTests[0]?.title}` : ''}
           </h2>
           <button
             onClick={onClose}
@@ -176,10 +196,36 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
 
         <div className="p-6">
           <div className="mb-4 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Test Price</p>
-            <p className="text-2xl font-bold text-primary-700 dark:text-primary-400">
-              KES {test.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  {normalizedTests.length <= 1 ? 'Selected Test' : `Selected Tests (${normalizedTests.length})`}
+                </p>
+                <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                  {normalizedTests.length === 0 ? (
+                    <p>No tests selected.</p>
+                  ) : (
+                    normalizedTests.slice(0, 6).map((t) => (
+                      <p key={t.id} className="flex items-center justify-between gap-3">
+                        <span className="truncate">{t.title}</span>
+                        <span className="shrink-0 font-medium text-primary-700 dark:text-primary-400">
+                          KES {t.price.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
+                        </span>
+                      </p>
+                    ))
+                  )}
+                  {normalizedTests.length > 6 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400">+ {normalizedTests.length - 6} more…</p>
+                  )}
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total</p>
+                <p className="text-2xl font-bold text-primary-700 dark:text-primary-400">
+                  KES {totalPrice.toLocaleString('en-KE', { minimumFractionDigits: 2 })}
+                </p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -303,7 +349,7 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
                 disabled={isSubmitting}
                 className="flex-1 px-4 py-2 bg-primary-600 dark:bg-primary-500 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? 'Submitting...' : 'Book Test'}
+                {isSubmitting ? 'Submitting...' : normalizedTests.length <= 1 ? 'Book Test' : `Book Test${plural}`}
               </button>
             </div>
           </form>

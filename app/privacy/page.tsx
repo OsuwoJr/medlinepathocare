@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
               Introduction
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-              Medline Pathocare ("we," "our," or "us") is committed to protecting your privacy and personal information. 
+              Medline Pathocare (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy and personal information. 
               This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our 
               website or use our diagnostic laboratory services. We comply with the Kenya Data Protection Act, 2019, and 
               maintain the highest standards of confidentiality for all patient information.
@@ -201,7 +201,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               We may update this Privacy Policy from time to time to reflect changes in our practices or legal 
               requirements. We will notify you of any material changes by posting the updated policy on our website 
-              with a revised "Last updated" date. We encourage you to review this policy periodically.
+              with a revised &quot;Last updated&quot; date. We encourage you to review this policy periodically.
             </p>
           </section>
 

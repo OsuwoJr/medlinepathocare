@@ -250,7 +250,7 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               We reserve the right to modify these Terms of Service at any time. Material changes will be posted 
-              on our website with an updated "Last updated" date. Your continued use of our services after such 
+              on our website with an updated &quot;Last updated&quot; date. Your continued use of our services after such 
               changes constitutes acceptance of the modified terms. We encourage you to review these terms periodically.
             </p>
           </section>
