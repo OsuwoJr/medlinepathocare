@@ -7,10 +7,14 @@ import { auth } from "@/lib/auth";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+  return createClient(url, key);
+}
 
 export async function GET() {
   const session = await auth();
@@ -22,6 +26,7 @@ export async function GET() {
   const clientId = session.user.id;
 
   try {
+    const supabase = getSupabase();
     const { data: client, error: clientError } = await supabase
       .from("clients")
       .select("id")

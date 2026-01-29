@@ -1,12 +1,16 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-// Use service role so we can look up/create client records (RLS blocks anon after sign-in)
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Lazy Supabase clients — only created at runtime so build doesn't require env vars
+function getSupabaseAdmin(): SupabaseClient {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+  }
+  return createClient(url, key);
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -21,11 +25,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+        if (!url || !anonKey) {
+          return null;
+        }
+
         // Sign in with Supabase Auth (use anon client for auth only)
-        const supabaseAuth = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+        const supabaseAuth = createClient(url, anonKey);
 
         const { data, error } = await supabaseAuth.auth.signInWithPassword({
           email: credentials.email as string,
@@ -37,6 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         // Get or create client record (service role bypasses RLS)
+        const supabaseAdmin = getSupabaseAdmin();
         const { data: client } = await supabaseAdmin
           .from("clients")
           .select("*")
