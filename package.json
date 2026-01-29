@@ -9,7 +9,8 @@
     "lint": "next lint",
     "security:audit": "npm audit",
     "security:fix": "npm audit fix",
-    "security:audit:moderate": "npm audit --audit-level=moderate"
+    "security:audit:moderate": "npm audit --audit-level=moderate",
+    "test:portal-security": "node scripts/test-portal-security.mjs"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.15.0",

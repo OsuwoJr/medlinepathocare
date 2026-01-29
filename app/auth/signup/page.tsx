@@ -13,11 +13,13 @@ export default function SignUpPage() {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setLoading(true)
 
     try {
@@ -27,18 +29,26 @@ export default function SignUpPage() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: { data: { full_name: name, phone: phone || null } },
       })
 
       if (authError) throw authError
 
       if (authData.user) {
-        // Sign in so we have a session for RLS (insert own profile)
+        // Sign in so we have a session for RLS (insert own profile) — skip if email must be confirmed
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
 
-        if (signInError) throw signInError
+        if (signInError) {
+          // Supabase requires email confirmation: show success and ask user to confirm
+          if (signInError.message?.toLowerCase().includes('email not confirmed')) {
+            setSuccess(`Account created. Please check ${email} and click the confirmation link in the email to activate your account. Then sign in below.`)
+            return
+          }
+          throw signInError
+        }
 
         // Create client record (RLS allows insert when auth.uid() = id)
         const { error: clientError } = await supabase
@@ -67,7 +77,13 @@ export default function SignUpPage() {
         }
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      const message = err instanceof Error ? err.message : 'An error occurred'
+      // "Failed to fetch" usually means CSP blocked the request or network/server unreachable
+      if (message.toLowerCase().includes('failed to fetch') || message.toLowerCase().includes('network')) {
+        setError('Unable to reach the server. Check your connection and that Supabase is configured (see .env.local).')
+      } else {
+        setError(message)
+      }
     } finally {
       setLoading(false)
     }
@@ -88,6 +104,16 @@ export default function SignUpPage() {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {success && (
+            <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 text-green-700 dark:text-green-400 px-4 py-3 rounded">
+              {success}
+              <p className="mt-2">
+                <Link href="/auth/signin" className="font-medium underline">
+                  Go to sign in
+                </Link>
+              </p>
+            </div>
+          )}
           {error && (
             <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-400 px-4 py-3 rounded">
               {error}

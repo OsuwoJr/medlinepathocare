@@ -19,6 +19,7 @@
 .DS_Store
 *.pem
 CLIENT_PORTAL_IMPLEMENTATION_GUIDE.md
+DEPLOYMENT.md
 
 # debug
 npm-debug.log*

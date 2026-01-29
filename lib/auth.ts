@@ -44,10 +44,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           .single();
 
         if (!client) {
+          const meta = data.user.user_metadata;
           await supabaseAdmin.from("clients").insert({
             id: data.user.id,
             email: credentials.email,
-            name: data.user.email?.split("@")[0] ?? "Client",
+            name: (meta?.full_name as string) || (data.user.email?.split("@")[0] ?? "Client"),
+            phone: (meta?.phone as string) || null,
           });
         }
 

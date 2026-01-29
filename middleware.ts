@@ -9,8 +9,12 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 export default auth((req) => {
   const pathname = req.nextUrl.pathname;
 
-  // Rate limit API routes (no auth required)
-  if (pathname.startsWith('/api/')) {
+  // Rate limit API routes, but skip auth, admin, and portal (portal returns 401 when unauthenticated)
+  const skipRateLimit =
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/admin') ||
+    pathname.startsWith('/api/portal');
+  if (pathname.startsWith('/api/') && !skipRateLimit) {
     const ip = (req as NextRequest).ip || req.headers.get('x-forwarded-for') || 'unknown';
     const now = Date.now();
     const windowMs = 60 * 1000; // 1 minute

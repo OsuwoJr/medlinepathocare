@@ -63,7 +63,7 @@ const nextConfig = {
                 "style-src 'self' 'unsafe-inline'",
                 "img-src 'self' data: https:",
                 "font-src 'self' data: https://fonts.gstatic.com",
-                "connect-src 'self' https://formspree.io https://wa.me",
+                "connect-src 'self' https://formspree.io https://wa.me https://*.supabase.co wss://*.supabase.co",
                 "frame-ancestors 'self'",
               ].join('; ');
             })()
