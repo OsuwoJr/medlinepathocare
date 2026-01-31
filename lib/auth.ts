@@ -12,6 +12,13 @@ function getSupabaseAdmin(): SupabaseClient {
   return createClient(url, key);
 }
 
+function isAdminEmail(email: string): boolean {
+  const list = process.env.ADMIN_EMAILS;
+  if (!list) return false;
+  const emails = list.split(",").map((e) => e.trim().toLowerCase());
+  return emails.includes(email.toLowerCase());
+}
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     Credentials({
@@ -43,28 +50,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
-        // Get or create client record (service role bypasses RLS)
-        const supabaseAdmin = getSupabaseAdmin();
-        const { data: client } = await supabaseAdmin
-          .from("clients")
-          .select("*")
-          .eq("email", credentials.email)
-          .single();
+        const email = (credentials.email as string).trim();
+        const role = isAdminEmail(email) ? ("admin" as const) : ("user" as const);
 
-        if (!client) {
-          const meta = data.user.user_metadata;
-          await supabaseAdmin.from("clients").insert({
-            id: data.user.id,
-            email: credentials.email,
-            name: (meta?.full_name as string) || (data.user.email?.split("@")[0] ?? "Client"),
-            phone: (meta?.phone as string) || null,
-          });
+        // Get or create client record only for non-admins (service role bypasses RLS)
+        let name = data.user.email?.split("@")[0] ?? "Client";
+        if (role !== "admin") {
+          const supabaseAdmin = getSupabaseAdmin();
+          const { data: client } = await supabaseAdmin
+            .from("clients")
+            .select("*")
+            .eq("email", email)
+            .single();
+
+          if (!client) {
+            const meta = data.user.user_metadata;
+            name = (meta?.full_name as string) || name;
+            await supabaseAdmin.from("clients").insert({
+              id: data.user.id,
+              email,
+              name,
+              phone: (meta?.phone as string) || null,
+            });
+          } else {
+            name = client.name;
+          }
         }
 
         return {
           id: data.user.id,
           email: data.user.email ?? undefined,
-          name: client?.name ?? data.user.email?.split("@")[0] ?? "Client",
+          name,
+          role,
         };
       },
     }),
@@ -76,12 +93,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub!;
+        session.user.role = (token.role as "admin" | "user") ?? "user";
       }
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
+        token.role = (user as { role?: "admin" | "user" }).role ?? "user";
       }
       return token;
     },

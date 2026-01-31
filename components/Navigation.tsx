@@ -68,6 +68,14 @@ export default function Navigation() {
                 >
                   My Results
                 </Link>
+                {(session.user as { role?: string })?.role === 'admin' && (
+                  <Link
+                    href="/admin"
+                    className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors whitespace-nowrap text-sm lg:text-base"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
                   className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors whitespace-nowrap text-sm lg:text-base"
@@ -129,6 +137,15 @@ export default function Navigation() {
                       >
                         My Results
                       </Link>
+                      {(session.user as { role?: string })?.role === 'admin' && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setIsOpen(false)}
+                          className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 rounded-md transition-colors"
+                        >
+                          Admin
+                        </Link>
+                      )}
                       <button
                         onClick={() => { setIsOpen(false); signOut({ callbackUrl: '/' }); }}
                         className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 rounded-md transition-colors"

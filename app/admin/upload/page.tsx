@@ -3,7 +3,6 @@
 import { useState, FormEvent } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg']
@@ -22,7 +21,7 @@ export default function AdminUploadPage() {
   const [success, setSuccess] = useState('')
 
   if (status === 'unauthenticated') {
-    router.push('/auth/signin')
+    router.push('/admin/signin')
     return null
   }
 
@@ -104,47 +103,34 @@ export default function AdminUploadPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex items-center justify-center p-12">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto" />
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-amber-500 border-t-transparent mx-auto" />
+          <p className="mt-4 text-slate-600 dark:text-slate-400">Loading...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Upload Test Result
-          </h1>
-          <div className="flex gap-3">
-            <Link
-              href="/portal"
-              className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600"
-            >
-              Portal
-            </Link>
-            <Link
-              href="/"
-              className="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600"
-            >
-              Home
-            </Link>
-          </div>
-        </div>
+    <div className="p-6 sm:p-8 lg:p-10">
+      <div className="max-w-2xl">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          Upload test result
+        </h1>
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
+          Attach a result file for a client. The client must have signed up first.
+        </p>
 
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+        <div className="mt-8 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow rounded-xl p-6">
           {error && (
-            <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 text-red-700 dark:text-red-400 px-4 py-3 rounded mb-4">
+            <div className="rounded-lg bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-4 py-3 mb-4">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 text-green-700 dark:text-green-400 px-4 py-3 rounded mb-4">
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 px-4 py-3 mb-4">
               {success}
             </div>
           )}
@@ -153,9 +139,9 @@ export default function AdminUploadPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Client Email *
+                Client email *
               </label>
               <input
                 id="email"
@@ -164,10 +150,10 @@ export default function AdminUploadPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 placeholder="client@example.com"
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 The client must have signed up first.
               </p>
             </div>
@@ -175,9 +161,9 @@ export default function AdminUploadPage() {
             <div>
               <label
                 htmlFor="testName"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Test Name *
+                Test name *
               </label>
               <input
                 id="testName"
@@ -186,7 +172,7 @@ export default function AdminUploadPage() {
                 required
                 value={testName}
                 onChange={(e) => setTestName(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 placeholder="e.g., Complete Blood Count"
               />
             </div>
@@ -194,9 +180,9 @@ export default function AdminUploadPage() {
             <div>
               <label
                 htmlFor="testId"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Test ID (Optional)
+                Test ID (optional)
               </label>
               <input
                 id="testId"
@@ -204,7 +190,7 @@ export default function AdminUploadPage() {
                 type="text"
                 value={testId}
                 onChange={(e) => setTestId(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 placeholder="e.g., CBC-2025-001"
               />
             </div>
@@ -212,9 +198,9 @@ export default function AdminUploadPage() {
             <div>
               <label
                 htmlFor="file"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Result File (PDF / Image) *
+                Result file (PDF / image) *
               </label>
               <input
                 id="file"
@@ -223,13 +209,13 @@ export default function AdminUploadPage() {
                 required
                 accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg,image/jpg"
                 onChange={handleFileChange}
-                className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-primary-900/30 dark:file:text-primary-300"
+                className="mt-1 block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-500/10 file:text-amber-600 dark:file:text-amber-400 hover:file:bg-amber-500/20"
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 PDF or image (PNG, JPG). Max 10MB.
               </p>
               {file && (
-                <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                   Selected: {file.name} ({(file.size / 1024).toFixed(1)} KB)
                 </p>
               )}
@@ -238,9 +224,9 @@ export default function AdminUploadPage() {
             <div>
               <label
                 htmlFor="notes"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                className="block text-sm font-medium text-slate-700 dark:text-slate-300"
               >
-                Notes (Optional)
+                Notes (optional)
               </label>
               <textarea
                 id="notes"
@@ -248,7 +234,7 @@ export default function AdminUploadPage() {
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 placeholder="Any additional notes..."
               />
             </div>
@@ -256,9 +242,9 @@ export default function AdminUploadPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center py-2.5 px-4 rounded-lg text-sm font-semibold text-slate-900 bg-amber-500 hover:bg-amber-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Uploading...' : 'Upload Result'}
+              {loading ? 'Uploading...' : 'Upload result'}
             </button>
           </form>
         </div>

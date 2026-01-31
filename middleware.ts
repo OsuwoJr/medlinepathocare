@@ -41,12 +41,25 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
-  // Protect /portal and /admin - require authentication
-  if (pathname.startsWith('/portal') || pathname.startsWith('/admin')) {
+  // Protect /portal - require authentication, use client sign-in
+  if (pathname.startsWith('/portal')) {
     if (!req.auth) {
       const signInUrl = new URL('/auth/signin', req.nextUrl.origin);
       signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
       return Response.redirect(signInUrl);
+    }
+  }
+
+  // Protect /admin (except admin sign-in) - require auth + admin role
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/signin')) {
+    if (!req.auth) {
+      const signInUrl = new URL('/admin/signin', req.nextUrl.origin);
+      signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
+      return Response.redirect(signInUrl);
+    }
+    const role = (req.auth.user as { role?: string } | undefined)?.role;
+    if (role !== 'admin') {
+      return Response.redirect(new URL('/', req.nextUrl.origin));
     }
   }
 
