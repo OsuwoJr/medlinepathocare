@@ -1,12 +1,15 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect, useRef, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const ALLOWED_EXTENSIONS = ['.pdf', '.png', '.jpg', '.jpeg']
 const ALLOWED_TYPES = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg']
+
+type ClientOption = { id: string; email: string; name: string; phone: string | null }
+type TestOption = { id: string; title: string }
 
 export default function AdminUploadPage() {
   const { data: session, status } = useSession()
@@ -19,6 +22,73 @@ export default function AdminUploadPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [clientOptions, setClientOptions] = useState<ClientOption[]>([])
+  const [loadingClients, setLoadingClients] = useState(false)
+  const [showClientDropdown, setShowClientDropdown] = useState(false)
+  const clientDropdownRef = useRef<HTMLDivElement>(null)
+  const clientSearchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [allTestOptions, setAllTestOptions] = useState<TestOption[]>([])
+  const [showTestDropdown, setShowTestDropdown] = useState(false)
+  const testDropdownRef = useRef<HTMLDivElement>(null)
+
+  const fetchClients = useCallback(async (search: string) => {
+    setLoadingClients(true)
+    try {
+      const q = search.trim() ? `?search=${encodeURIComponent(search.trim())}` : ''
+      const res = await fetch(`/api/admin/clients${q}`)
+      const json = await res.json()
+      if (res.ok) setClientOptions(json.clients ?? [])
+      else setClientOptions([])
+    } catch {
+      setClientOptions([])
+    } finally {
+      setLoadingClients(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (clientSearchTimeoutRef.current) clearTimeout(clientSearchTimeoutRef.current)
+    clientSearchTimeoutRef.current = setTimeout(() => {
+      fetchClients(email)
+    }, 300)
+    return () => {
+      if (clientSearchTimeoutRef.current) clearTimeout(clientSearchTimeoutRef.current)
+    }
+  }, [email, fetchClients])
+
+  useEffect(() => {
+    async function loadTestCatalog() {
+      try {
+        const res = await fetch('/api/test-catalog')
+        const json = await res.json()
+        if (res.ok) setAllTestOptions(json.tests ?? [])
+      } catch {
+        setAllTestOptions([])
+      }
+    }
+    loadTestCatalog()
+  }, [])
+
+  const filteredTestOptions = testName.trim()
+    ? allTestOptions.filter(
+        (t) =>
+          t.title.toLowerCase().includes(testName.toLowerCase())
+      )
+    : allTestOptions
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node
+      if (clientDropdownRef.current && !clientDropdownRef.current.contains(target)) {
+        setShowClientDropdown(false)
+      }
+      if (testDropdownRef.current && !testDropdownRef.current.contains(target)) {
+        setShowTestDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   if (status === 'unauthenticated') {
     router.push('/admin/signin')
@@ -136,7 +206,7 @@ export default function AdminUploadPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <div ref={clientDropdownRef} className="relative">
               <label
                 htmlFor="email"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300"
@@ -146,19 +216,54 @@ export default function AdminUploadPage() {
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
+                autoComplete="off"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onFocus={() => setShowClientDropdown(true)}
                 className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="client@example.com"
+                placeholder="Search or type client email..."
               />
+              {showClientDropdown && (
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg max-h-56 overflow-auto">
+                  {loadingClients ? (
+                    <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                      Searching clients...
+                    </div>
+                  ) : clientOptions.length === 0 ? (
+                    <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                      {email.trim() ? 'No matching clients.' : 'Type to search clients.'}
+                    </div>
+                  ) : (
+                    <ul className="py-1">
+                      {clientOptions.map((client) => (
+                        <li key={client.id}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-3 py-2 text-sm text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 focus:bg-slate-100 dark:focus:bg-slate-700 focus:outline-none"
+                            onClick={() => {
+                              setEmail(client.email)
+                              setShowClientDropdown(false)
+                            }}
+                          >
+                            <span className="font-medium">{client.name}</span>
+                            <span className="block text-xs text-slate-500 dark:text-slate-400 truncate">
+                              {client.email}
+                            </span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
               <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                The client must have signed up first.
+                Search for a client or type their email. The client must have signed up first.
               </p>
             </div>
 
-            <div>
+            <div ref={testDropdownRef} className="relative">
               <label
                 htmlFor="testName"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300"
@@ -169,12 +274,44 @@ export default function AdminUploadPage() {
                 id="testName"
                 name="testName"
                 type="text"
+                autoComplete="off"
                 required
                 value={testName}
                 onChange={(e) => setTestName(e.target.value)}
+                onFocus={() => setShowTestDropdown(true)}
                 className="mt-1 block w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="e.g., Complete Blood Count"
+                placeholder="Search or type test name..."
               />
+              {showTestDropdown && (
+                <div className="absolute z-10 mt-1 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-lg max-h-56 overflow-auto">
+                  {allTestOptions.length === 0 ? (
+                    <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                      Loading test catalog...
+                    </div>
+                  ) : filteredTestOptions.length === 0 ? (
+                    <div className="px-3 py-4 text-center text-sm text-slate-500 dark:text-slate-400">
+                      No matching tests.
+                    </div>
+                  ) : (
+                    <ul className="py-1">
+                      {filteredTestOptions.map((test) => (
+                        <li key={test.id}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-3 py-2 text-sm text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-700 focus:bg-slate-100 dark:focus:bg-slate-700 focus:outline-none"
+                            onClick={() => {
+                              setTestName(test.title)
+                              setShowTestDropdown(false)
+                            }}
+                          >
+                            {test.title}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
 
             <div>
