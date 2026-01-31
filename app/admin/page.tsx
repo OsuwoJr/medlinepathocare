@@ -37,33 +37,47 @@ export default function AdminDashboardPage() {
             <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-amber-500 flex-shrink-0" />
           </Link>
 
-          <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm opacity-75">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
+          <Link
+            href="/admin/reports"
+            className="group flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:border-amber-500/50 hover:shadow-md transition-all"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-amber-500/10 group-hover:text-amber-600 dark:group-hover:text-amber-400">
               <FileText className="h-6 w-6" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-slate-700 dark:text-slate-300">
-                Reports (coming soon)
+              <h2 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                Reports
+                <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                  coming soon
+                </span>
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 View upload history and stats
               </p>
             </div>
-          </div>
+            <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-amber-500 flex-shrink-0" />
+          </Link>
 
-          <div className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm opacity-75">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500">
+          <Link
+            href="/admin/clients"
+            className="group flex items-center gap-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:border-amber-500/50 hover:shadow-md transition-all"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-amber-500/10 group-hover:text-amber-600 dark:group-hover:text-amber-400">
               <Users className="h-6 w-6" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="font-semibold text-slate-700 dark:text-slate-300">
-                Clients (coming soon)
+              <h2 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                Clients
+                <span className="text-xs font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                  coming soon
+                </span>
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Manage client accounts
               </p>
             </div>
-          </div>
+            <ArrowRight className="h-5 w-5 text-slate-400 group-hover:text-amber-500 flex-shrink-0" />
+          </Link>
         </div>
       </div>
     </div>

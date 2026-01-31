@@ -3,10 +3,10 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { LayoutDashboard, Upload, LogOut, Shield, Home } from 'lucide-react';
+import { LayoutDashboard, Upload, FileText, Users, LogOut, Shield, Home } from 'lucide-react';
 import { useEffect, type ReactNode } from 'react';
 
-function AdminNav({ children }: { children: ReactNode }) {
+function AdminNav({ children, pathname }: { children: ReactNode; pathname: string }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex">
       <aside className="w-56 flex-shrink-0 bg-slate-900 dark:bg-slate-900 border-r border-slate-800 flex flex-col">
@@ -24,17 +24,47 @@ function AdminNav({ children }: { children: ReactNode }) {
         <nav className="flex-1 p-3 space-y-0.5">
           <Link
             href="/admin"
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              pathname === '/admin'
+                ? 'bg-slate-800 text-white'
+                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
           >
             <LayoutDashboard className="w-4 h-4" />
             Dashboard
           </Link>
           <Link
             href="/admin/upload"
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              pathname === '/admin/upload'
+                ? 'bg-slate-800 text-white'
+                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
           >
             <Upload className="w-4 h-4" />
             Upload result
+          </Link>
+          <Link
+            href="/admin/reports"
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              pathname === '/admin/reports'
+                ? 'bg-slate-800 text-white'
+                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Reports
+          </Link>
+          <Link
+            href="/admin/clients"
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              pathname === '/admin/clients'
+                ? 'bg-slate-800 text-white'
+                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            Clients
           </Link>
         </nav>
         <div className="p-3 border-t border-slate-800 space-y-0.5">
@@ -98,5 +128,5 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  return <AdminNav>{children}</AdminNav>;
+  return <AdminNav pathname={pathname ?? ''}>{children}</AdminNav>;
 }
