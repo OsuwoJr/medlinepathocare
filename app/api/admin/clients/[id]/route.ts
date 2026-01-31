@@ -69,7 +69,7 @@ export async function PATCH(
     );
   }
 
-  const updates: { name?: string; phone?: string; updated_at?: string } = {};
+  const updates: { name?: string; phone?: string | null; updated_at?: string } = {};
   if (typeof body.name === "string") updates.name = body.name.trim() || undefined;
   if (body.phone !== undefined)
     updates.phone = body.phone === null || body.phone === "" ? null : String(body.phone).trim();

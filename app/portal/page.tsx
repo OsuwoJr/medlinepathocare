@@ -32,7 +32,7 @@ export default function PortalPage() {
     if (status === 'authenticated') {
       fetchResults()
     }
-  }, [status, session])
+  }, [status, session, router])
 
   const fetchResults = async () => {
     try {
