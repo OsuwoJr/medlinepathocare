@@ -44,7 +44,7 @@ export default function SignUpPage() {
         if (signInError) {
           // Supabase requires email confirmation: show success and ask user to confirm
           if (signInError.message?.toLowerCase().includes('email not confirmed')) {
-            setSuccess(`Account created. Please check ${email} and click the confirmation link in the email to activate your account. Then sign in below.`)
+            setSuccess(`Account created. Please check ${email} (including your spam or junk folder) and click the confirmation link in the email to activate your account. Then sign in below.`)
             return
           }
           throw signInError
@@ -107,6 +107,9 @@ export default function SignUpPage() {
           {success && (
             <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 text-green-700 dark:text-green-400 px-4 py-3 rounded">
               {success}
+              <p className="mt-2 text-sm">
+                If you don&apos;t see the email, check your <strong>spam or junk</strong> folder.
+              </p>
               <p className="mt-2">
                 <Link href="/auth/signin" className="font-medium underline">
                   Go to sign in
