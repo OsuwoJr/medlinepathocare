@@ -9,6 +9,7 @@ function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const registered = searchParams.get('registered') === '1'
+  const reset = searchParams.get('reset') === '1'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -57,6 +58,11 @@ function SignInForm() {
               Account created. Sign in to continue.
             </p>
           )}
+          {reset && (
+            <p className="mt-2 text-center text-sm text-green-600 dark:text-green-400">
+              Password updated. Sign in with your new password.
+            </p>
+          )}
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -81,9 +87,14 @@ function SignInForm() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Password
+                </label>
+                <Link href="/auth/forgot-password" className="text-sm font-medium text-primary-600 hover:text-primary-500">
+                  Forgot your password?
+                </Link>
+              </div>
               <input
                 id="password"
                 name="password"

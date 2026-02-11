@@ -109,39 +109,13 @@ export default function Home() {
             <h3 className="text-3xl font-bold text-primary-700 dark:text-primary-400 mb-8 text-center">
               Our History
             </h3>
-            <div className="space-y-8 max-w-4xl mx-auto">
-              <div className="border-l-4 border-primary-600 pl-6">
-                <h4 className="text-xl font-semibold text-primary-600 dark:text-primary-400 mb-2">
-                  Inception: The Pursuit of Precision (Est. 2025)
-                </h4>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Medline Pathocare was founded in 2025 by Sir. Granton Trevar, a respected Medical Laboratory Officer with a vision to create a diagnostic facility focused from the simplest of the tests to complex and esoteric testing. Starting in a modest laboratory space in a Roysambu area of Nairobi, the lab initially specialized in niche endocrinology panels and routine biochemistry screening.
-                </p>
-              </div>
-              <div className="border-l-4 border-primary-600 pl-6">
-                <h4 className="text-xl font-semibold text-primary-600 dark:text-primary-400 mb-2">
-                  Growth and Specialization (2025–2026)
-                </h4>
-                <p className="text-gray-700 dark:text-gray-300">
-                  As their reputation for precision grew, Medline Pathocare expanded its service offerings to include homecare services. By 2026, the lab had outgrown its original facility and moved to a state-of-the-art diagnostic center, within the same area. This expansion allowed for the introduction of molecular diagnostics, particularly in infectious disease testing and hereditary cancer screening.
-                </p>
-              </div>
-              <div className="border-l-4 border-primary-600 pl-6">
-                <h4 className="text-xl font-semibold text-primary-600 dark:text-primary-400 mb-2">
-                  Technological Integration & Regional Reach (2025–Present)
-                </h4>
-                <p className="text-gray-700 dark:text-gray-300">
-                  The late 2025 saw Medline Pathocare heavily invest in automation and bioinformatics. The integration of a secure, custom-built provider portal streamlined the ordering process and result delivery. By 2026, Medline Pathocare served a network of over 20 clinical partners across three neighboring estates.
-                </p>
-              </div>
-              <div className="border-l-4 border-primary-600 pl-6">
-                <h4 className="text-xl font-semibold text-primary-600 dark:text-primary-400 mb-2">
-                  The Future: Indispensable Partnership (Present Day)
-                </h4>
-                <p className="text-gray-700 dark:text-gray-300">
-                  Today, Medline Pathocare stands as a leading referral laboratory in its area, accredited and certified by KMLTTB. The laboratory continues to expand its test menu to include cutting-edge advanced pathology services, remaining committed to providing precise, actionable insights that empower fellow healthcare providers.
-                </p>
-              </div>
+            <div className="space-y-6 max-w-4xl mx-auto">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                Founded in 2025, Medline Pathocare is an accredited laboratory based in Nairobi, established by a qualified Medical Laboratory Scientist/Officer with a strong commitment to accuracy and reliability. From routine testing to advanced diagnostics, we deliver precise, clinically relevant results supported by modern technology and professional expertise.
+              </p>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
+                As an accredited lab, we serve healthcare providers and patients directly, offering timely results, secure digital reporting, wellness checkups, and patient-centered services—including home sample collection. At Medline Pathocare, precision drives every diagnosis.
+              </p>
             </div>
           </div>
         </div>
