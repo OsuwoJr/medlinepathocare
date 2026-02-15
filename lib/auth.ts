@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { verifyOAuthToken } from "@/lib/oauth-token";
 
 // Lazy Supabase clients — only created at runtime so build doesn't require env vars
 function getSupabaseAdmin(): SupabaseClient {
@@ -26,8 +27,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        token: { label: "OAuth token", type: "text" },
       },
       async authorize(credentials) {
+        // OAuth one-time token (from Google / Facebook / X callback)
+        const token = credentials?.token as string | undefined;
+        if (token) {
+          const payload = verifyOAuthToken(token);
+          if (!payload) return null;
+          let name = payload.email.split("@")[0];
+          if (payload.role !== "admin") {
+            const supabaseAdmin = getSupabaseAdmin();
+            const { data: client } = await supabaseAdmin
+              .from("clients")
+              .select("name")
+              .eq("id", payload.sub)
+              .single();
+            if (client?.name) name = client.name;
+          }
+          return {
+            id: payload.sub,
+            email: payload.email,
+            name,
+            role: payload.role,
+          };
+        }
+
         if (!credentials?.email || !credentials?.password) {
           return null;
         }

@@ -6,6 +6,12 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { createBrowserClient } from '@/lib/supabase'
 
+const OAUTH_PROVIDERS = [
+  { id: 'google' as const, label: 'Continue with Google' },
+  { id: 'facebook' as const, label: 'Continue with Facebook' },
+  { id: 'twitter' as const, label: 'Continue with X (Twitter)' },
+]
+
 export default function SignUpPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
@@ -15,6 +21,28 @@ export default function SignUpPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null)
+
+  const handleOAuth = async (provider: 'google' | 'facebook' | 'twitter') => {
+    setOauthLoading(provider)
+    setError('')
+    try {
+      const supabase = createBrowserClient()
+      const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : undefined
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo, queryParams: { next: '/portal' } },
+      })
+      if (oauthError) {
+        setError(oauthError.message)
+        setOauthLoading(null)
+        return
+      }
+    } catch {
+      setError('Could not start sign-in. Please try again.')
+      setOauthLoading(null)
+    }
+  }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -102,6 +130,27 @@ export default function SignUpPage() {
               sign in to your existing account
             </Link>
           </p>
+        </div>
+        <div className="mt-6 space-y-3">
+          {OAUTH_PROVIDERS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              disabled={!!oauthLoading || !!loading}
+              onClick={() => handleOAuth(p.id)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 text-sm font-medium"
+            >
+              {oauthLoading === p.id ? 'Redirecting…' : p.label}
+            </button>
+          ))}
+        </div>
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">Or create account with email</span>
+          </div>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {success && (
