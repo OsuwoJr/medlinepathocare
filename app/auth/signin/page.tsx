@@ -8,8 +8,6 @@ import { createBrowserClient } from '@/lib/supabase'
 
 const OAUTH_PROVIDERS = [
   { id: 'google', label: 'Continue with Google' },
-  { id: 'facebook', label: 'Continue with Facebook' },
-  { id: 'twitter', label: 'Continue with X (Twitter)' },
 ] as const
 
 function SignInForm() {
