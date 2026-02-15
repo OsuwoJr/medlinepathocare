@@ -24,7 +24,7 @@ function SignInForm() {
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<string | null>(null)
 
-  // Complete OAuth sign-in when redirected back with token
+  // Complete OAuth sign-in when redirected back with token (server callback flow)
   useEffect(() => {
     if (!token) return
     setLoading(true)
@@ -37,6 +37,55 @@ function SignInForm() {
         setError('Sign-in link expired or invalid. Please try again.')
       }
     })
+  }, [token, callbackUrl, router])
+
+  // Fallback: OAuth tokens in URL hash (implicit flow) — exchange for one-time token and sign in
+  useEffect(() => {
+    if (token || typeof window === 'undefined') return
+    const hash = window.location.hash?.slice(1) || ''
+    if (!hash) return
+    const params = new URLSearchParams(hash)
+    const accessToken = params.get('access_token')
+    const refreshToken = params.get('refresh_token')
+    if (!accessToken || !refreshToken) return
+
+    setLoading(true)
+    setError('')
+    fetch('/api/auth/oauth-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+    })
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search)
+          setError(data.error === 'oauth_no_email' ? 'Sign-in failed: no email from provider.' : 'Sign-in failed. Please try again.')
+          setLoading(false)
+          return
+        }
+        const oneTimeToken = data.token
+        if (!oneTimeToken) {
+          setError('Sign-in failed. Please try again.')
+          setLoading(false)
+          return
+        }
+        // Clear hash so we don't re-use tokens; replaceState to remove tokens from URL
+        window.history.replaceState(null, '', window.location.pathname + window.location.search)
+        return signIn('credentials', { token: oneTimeToken, redirect: false, callbackUrl })
+      })
+      .then((result) => {
+        setLoading(false)
+        if (result?.ok) {
+          router.push(callbackUrl)
+          router.refresh()
+        }
+      })
+      .catch(() => {
+        if (typeof window !== 'undefined') window.history.replaceState(null, '', window.location.pathname + window.location.search)
+        setError('Sign-in failed. Please try again.')
+        setLoading(false)
+      })
   }, [token, callbackUrl, router])
 
   const handleOAuth = async (provider: 'google' | 'facebook' | 'twitter') => {
