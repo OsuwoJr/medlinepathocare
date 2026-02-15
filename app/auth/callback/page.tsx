@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { createBrowserClient } from '@/lib/supabase'
@@ -9,8 +9,10 @@ function CallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'exchanging' | 'signing-in' | 'error'>('exchanging')
+  const hasRun = useRef(false)
 
   useEffect(() => {
+    if (hasRun.current) return
     const code = searchParams.get('code')
     const next = searchParams.get('next') ?? '/portal'
     const callbackUrl = next.startsWith('/') ? next : '/portal'
@@ -20,6 +22,7 @@ function CallbackContent() {
       return
     }
 
+    hasRun.current = true
     const supabase = createBrowserClient()
     supabase.auth
       .exchangeCodeForSession(code)

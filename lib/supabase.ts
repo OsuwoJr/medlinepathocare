@@ -1,12 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient as createSSRBrowserClient } from "@supabase/ssr";
 
 /**
- * Browser-safe Supabase client (uses anon key).
- * Use for client-side auth and RLS-scoped queries.
- */
-/**
- * Browser Supabase client. Uses PKCE flow for OAuth so the redirect
- * contains ?code=... (handled by server callback) instead of #access_token=...
+ * Browser Supabase client. Uses @supabase/ssr so PKCE code_verifier is stored
+ * in cookies and available on the OAuth callback (fixes "code verifier missing").
+ * Also sets flowType: "pkce" and detectSessionInUrl by default.
  */
 export function createBrowserClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -14,5 +11,5 @@ export function createBrowserClient() {
   if (!url || !anonKey) {
     throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
   }
-  return createClient(url, anonKey, { auth: { flowType: "pkce" } });
+  return createSSRBrowserClient(url, anonKey);
 }
