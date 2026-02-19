@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import StructuredData from "@/components/StructuredData";
 import ClientPortalBanner from "@/components/ClientPortalBanner";
+import DiabetesHypertensionPackages from "@/components/DiabetesHypertensionPackages";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
 
@@ -26,6 +27,8 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       <StructuredData type="MedicalBusiness" />
+      {/* Client Portal banner – only visible when not signed in; right below header */}
+      <ClientPortalBanner />
       {/* Hero Section */}
       <section aria-label="Hero section" className="bg-gradient-to-br from-primary-50 to-white dark:from-gray-900 dark:to-gray-800 py-20 px-4">
         <div className="max-w-7xl mx-auto">
@@ -72,8 +75,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Client Portal banner – only visible when not signed in */}
-      <ClientPortalBanner />
+      {/* Diabetes & Hypertension packages */}
+      <DiabetesHypertensionPackages />
 
       {/* Mission & Vision Section */}
       <section id="about" aria-label="About Medline Pathocare" className="py-20 px-4 bg-white dark:bg-gray-900">
