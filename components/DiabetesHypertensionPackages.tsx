@@ -96,6 +96,61 @@ const bulletVariants = {
   }),
 };
 
+/* Moving border light – star/snake light traveling along the card border */
+function BorderSnakeLight({
+  duration = 6,
+  delay = 0,
+  clockwise = true,
+}: {
+  duration?: number;
+  delay?: number;
+  clockwise?: boolean;
+}) {
+  const a = "3%";
+  const b = "97%";
+  const path = clockwise
+    ? {
+        left: [a, b, b, a, a],
+        top: [a, a, b, b, a],
+        times: [0, 0.25, 0.5, 0.75, 1] as const,
+      }
+    : {
+        left: [a, a, b, b, a],
+        top: [a, b, b, a, a],
+        times: [0, 0.25, 0.5, 0.75, 1] as const,
+      };
+
+  return (
+    <Motion.div
+      className="absolute inset-0 rounded-2xl pointer-events-none overflow-visible"
+      aria-hidden
+    >
+      <Motion.div
+        className="absolute w-4 h-4 rounded-full origin-center"
+        style={{
+          left: path.left[0],
+          top: path.top[0],
+          transform: "translate(-50%, -50%)",
+          background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,188,212,0.9) 40%, transparent 70%)",
+          boxShadow:
+            "0 0 12px 2px rgba(0,188,212,0.9), 0 0 24px 6px rgba(0,188,212,0.5), 0 0 40px 8px rgba(0,188,212,0.3)",
+        }}
+        animate={{
+          left: path.left,
+          top: path.top,
+        }}
+        transition={{
+          duration,
+          repeat: Infinity,
+          ease: "linear",
+          delay,
+          times: [...path.times],
+        }}
+      />
+    </Motion.div>
+  );
+}
+
 /* Floating medical / lab / microbiology icons – 10x count (160) with varied positions & motion */
 const ICON_TYPES = ["dna1", "dna2", "dna3", "microscope", "flask", "bacteria", "syringe", "pill", "blood", "heart", "testtube", "virus", "beaker", "cell", "capsule", "pulse"] as const;
 const KEYFRAME_SETS: number[][][] = [
@@ -497,6 +552,12 @@ export default function DiabetesHypertensionPackages() {
                 }}
               />
               <div className="relative h-full rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-5 md:p-6 shadow-2xl">
+                {/* Moving border light – star/snake along the border */}
+                <BorderSnakeLight
+                  duration={5 + cardIndex * 1.2}
+                  delay={cardIndex * 0.8}
+                  clockwise={cardIndex !== 1}
+                />
                 <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-500/20 text-primary-400 font-bold text-sm mb-3 ring-1 ring-primary-500/30">
                   {pkg.number}
                 </div>
