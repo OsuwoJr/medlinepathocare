@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import StructuredData from "@/components/StructuredData";
 import ClientPortalBanner from "@/components/ClientPortalBanner";
 import DiabetesHypertensionPackages from "@/components/DiabetesHypertensionPackages";
+import ReviewsSection from "@/components/ReviewsSection";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://medlinepathocare.vercel.app';
 
@@ -334,6 +335,9 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Reviews & Suggestions Section */}
+      <ReviewsSection />
+
       {/* Contact Section */}
       <section id="contact" aria-label="Contact Information" className="py-20 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
@@ -415,6 +419,7 @@ export default function Home() {
                 <li><Link href="#about" className="hover:text-primary-400">About Us</Link></li>
                 <li><Link href="#services" className="hover:text-primary-400">Services</Link></li>
                 <li><Link href="#providers" className="hover:text-primary-400">For Providers</Link></li>
+                <li><Link href="#reviews" className="hover:text-primary-400">Reviews</Link></li>
                 <li><Link href="#contact" className="hover:text-primary-400">Contact</Link></li>
               </ul>
             </div>
