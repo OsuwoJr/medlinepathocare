@@ -110,6 +110,7 @@ Create a `.env.local` file in the project root. Required and optional variables:
 | `NEXT_PUBLIC_FORMSPREE_ENDPOINT` | No | Formspree endpoint for booking form |
 | `NEXT_PUBLIC_FORMSPREE_CONSULTATION_ENDPOINT` | No | Formspree endpoint for consultation form |
 | `NEXT_PUBLIC_FORMSPREE_SUPPLY_ORDER_ENDPOINT` | No | Formspree endpoint for supply order form |
+| `NEXT_PUBLIC_FORMSPREE_PACKAGES_ENDPOINT` | No | Formspree endpoint for packages/offers interest form (default: https://formspree.io/f/mojnkjyj) |
 
 ## 📁 Database Setup
 

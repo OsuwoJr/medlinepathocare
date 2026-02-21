@@ -1,8 +1,19 @@
 'use client';
 
-import { useState, FormEvent, useRef } from 'react';
-import { X } from 'lucide-react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
+import { X, Wallet, Copy, Check } from 'lucide-react';
 import { bookingSchema, type BookingFormData } from '@/lib/validation';
+
+/** Generate a unique order reference for M-Pesa manual payment matching */
+function generateOrderReference(): string {
+  const timePart = Date.now().toString(36).toUpperCase();
+  const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `ORD-${timePart}-${randomPart}`;
+}
+
+const M_PESA_PAYBILL = '542542';
+const M_PESA_ACCOUNT = '986362';
+const M_PESA_ACCOUNT_NAME = 'Granton Trevar Ouma';
 
 interface Test {
   id: string;
@@ -26,7 +37,9 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  
+  const [orderReference, setOrderReference] = useState<string | null>(null);
+  const [copiedRef, setCopiedRef] = useState(false);
+
   // Rate limiting
   const lastSubmitTime = useRef<number>(0);
   const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds
@@ -36,6 +49,18 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
   const normalizedTests = (tests || []).filter(Boolean);
   const totalPrice = normalizedTests.reduce((sum, t) => sum + (Number.isFinite(t.price) ? t.price : 0), 0);
   const plural = normalizedTests.length === 1 ? '' : 's';
+
+  const copyReference = () => {
+    if (!orderReference) return;
+    navigator.clipboard.writeText(orderReference).then(() => {
+      setCopiedRef(true);
+      setTimeout(() => setCopiedRef(false), 2000);
+    });
+  };
+
+  useEffect(() => {
+    if (isOpen) setOrderReference(null);
+  }, [isOpen]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -71,6 +96,9 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
         const sanitizedPhone = formData.phone.trim().substring(0, 15);
         const sanitizedMessage = formData.message?.trim().substring(0, 1000) || '';
 
+        const ref = generateOrderReference();
+        setOrderReference(ref);
+
         const testsBlock =
           normalizedTests.length > 0
             ? normalizedTests
@@ -82,6 +110,7 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
             : '• (No tests selected)';
 
         const whatsappMessage = `*Test Booking Request*
+*Order Reference (use when paying):* ${ref}
 
 *Test Details:*
 ${testsBlock}
@@ -125,6 +154,9 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
           setIsSubmitting(false);
           return;
         }
+
+        const ref = generateOrderReference();
+        setOrderReference(ref);
         
         const response = await fetch(formspreeEndpoint, {
           method: 'POST',
@@ -140,6 +172,7 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
             testNames: normalizedTests.map((t) => t.title).join(', '),
             testIds: normalizedTests.map((t) => t.id).join(', '),
             totalPrice,
+            orderReference: ref,
             customerName: formData.name.trim(),
             customerEmail: formData.email?.trim() || '',
             customerPhone: formData.phone.trim(),
@@ -226,6 +259,38 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Payment (optional) – manual M-Pesa */}
+          <div className="mb-4 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+            <div className="flex items-center gap-2 mb-2">
+              <Wallet className="text-amber-600 dark:text-amber-400" size={20} />
+              <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                Payment (optional – before or after service)
+              </h3>
+            </div>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mb-3">
+              You can pay now or after your visit. If you pay manually via M-Pesa, use the order reference from your confirmation so we can match your payment.
+            </p>
+            <div className="text-sm text-gray-700 dark:text-gray-300 space-y-1 font-mono">
+              <p><span className="text-gray-500 dark:text-gray-400">Paybill:</span> {M_PESA_PAYBILL}</p>
+              <p><span className="text-gray-500 dark:text-gray-400">Account:</span> {M_PESA_ACCOUNT}</p>
+              <p><span className="text-gray-500 dark:text-gray-400">Name:</span> {M_PESA_ACCOUNT_NAME}</p>
+            </div>
+            {orderReference && (
+              <div className="mt-3 pt-3 border-t border-amber-200 dark:border-amber-800 flex items-center justify-between gap-2">
+                <span className="text-xs text-amber-800 dark:text-amber-200">Your order reference:</span>
+                <span className="font-mono font-semibold text-amber-900 dark:text-amber-100">{orderReference}</span>
+                <button
+                  type="button"
+                  onClick={copyReference}
+                  className="p-1.5 rounded border border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+                  aria-label="Copy reference"
+                >
+                  {copiedRef ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                </button>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -321,10 +386,15 @@ ${sanitizedMessage ? `*Additional Message:*\n${sanitizedMessage}\n\n` : ''}Booki
             </div>
 
             {submitStatus === 'success' && (
-              <div className="p-4 bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-600 rounded-lg">
+              <div className="p-4 bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-600 rounded-lg space-y-2">
                 <p className="text-green-800 dark:text-green-200 text-sm font-medium">
                   Booking request submitted successfully! We&apos;ll contact you soon.
                 </p>
+                {orderReference && (
+                  <p className="text-green-700 dark:text-green-300 text-xs">
+                    Your order reference <strong className="font-mono">{orderReference}</strong> has been sent to your email. Use this reference when paying via M-Pesa (Paybill {M_PESA_PAYBILL}, Account {M_PESA_ACCOUNT}) so we can match your payment.
+                  </p>
+                )}
               </div>
             )}
 

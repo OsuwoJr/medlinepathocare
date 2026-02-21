@@ -2,7 +2,9 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion as Motion, useInView, useMotionValue, useSpring } from "framer-motion";
-import { Activity } from "lucide-react";
+import { Activity, X } from "lucide-react";
+
+const FORMSPREE_PACKAGES_ENDPOINT = "https://formspree.io/f/mojnkjyj";
 
 const PACKAGES = [
   {
@@ -438,9 +440,146 @@ function MagneticButton({
   );
 }
 
+type PackageItem = (typeof PACKAGES)[number];
+
+function PackageInterestModal({
+  pkg,
+  onClose,
+}: {
+  pkg: PackageItem;
+  onClose: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus("sending");
+    const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_PACKAGES_ENDPOINT || FORMSPREE_PACKAGES_ENDPOINT;
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          _subject: `Interest in ${pkg.title} package – Diabetes & Hypertension`,
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          message: message.trim() || "(No message)",
+          packageName: pkg.title,
+          packagePrice: pkg.priceFormatted,
+          packageServices: pkg.services.join("; "),
+        }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setName("");
+        setEmail("");
+        setPhone("");
+        setMessage("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="interest-modal-title"
+    >
+      <Motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0e14] p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          aria-label="Close"
+        >
+          <X size={20} />
+        </button>
+        <h3 id="interest-modal-title" className="text-xl font-bold text-white mb-1">
+          I&apos;m interested in {pkg.title}
+        </h3>
+        <p className="text-sm text-gray-400 mb-4">{pkg.priceFormatted}</p>
+        {status === "success" ? (
+          <p className="text-primary-400 font-medium">Thanks! We&apos;ll get back to you soon.</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <input
+              type="text"
+              required
+              placeholder="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <input
+              type="email"
+              required
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <input
+              type="tel"
+              required
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <textarea
+              placeholder="Message (optional)"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={2}
+              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+            />
+            {status === "error" && (
+              <p className="text-sm text-red-400">Something went wrong. Please try again or contact us by phone.</p>
+            )}
+            <div className="flex gap-2 pt-1">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-4 py-2 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={status === "sending"}
+                className="flex-1 px-4 py-2 rounded-lg bg-primary-500 hover:bg-primary-400 text-white font-medium disabled:opacity-60 transition-colors"
+              >
+                {status === "sending" ? "Sending…" : "Send"}
+              </button>
+            </div>
+          </form>
+        )}
+      </Motion.div>
+    </div>
+  );
+}
+
 export default function DiabetesHypertensionPackages() {
   const sectionRef = useRef<HTMLElement>(null);
   const inView = useInView(sectionRef, { once: true, amount: 0.15 });
+  const [interestPackage, setInterestPackage] = useState<PackageItem | null>(null);
 
   return (
     <section
@@ -600,6 +739,16 @@ export default function DiabetesHypertensionPackages() {
                     prefix="KSH. "
                   />
                 </Motion.div>
+                <Motion.button
+                  type="button"
+                  onClick={() => setInterestPackage(pkg)}
+                  className="mt-3 w-full px-4 py-2.5 rounded-lg border border-primary-500/50 text-primary-400 font-medium text-sm hover:bg-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-colors"
+                  initial={{ opacity: 0 }}
+                  animate={inView ? { opacity: 1 } : {}}
+                  transition={{ delay: 0.5 + cardIndex * 0.1, duration: 0.4 }}
+                >
+                  I&apos;m interested
+                </Motion.button>
               </div>
             </Motion.article>
           ))}
@@ -664,6 +813,13 @@ export default function DiabetesHypertensionPackages() {
             </MagneticButton>
           </p>
         </Motion.div>
+
+        {interestPackage && (
+          <PackageInterestModal
+            pkg={interestPackage}
+            onClose={() => setInterestPackage(null)}
+          />
+        )}
       </div>
     </section>
   );
