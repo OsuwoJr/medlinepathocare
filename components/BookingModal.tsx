@@ -44,6 +44,10 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
   const lastSubmitTime = useRef<number>(0);
   const MIN_SUBMIT_INTERVAL = 5000; // 5 seconds
 
+  useEffect(() => {
+    if (isOpen) setOrderReference(null);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const normalizedTests = (tests || []).filter(Boolean);
@@ -57,10 +61,6 @@ export default function BookingModal({ tests, isOpen, onClose }: BookingModalPro
       setTimeout(() => setCopiedRef(false), 2000);
     });
   };
-
-  useEffect(() => {
-    if (isOpen) setOrderReference(null);
-  }, [isOpen]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

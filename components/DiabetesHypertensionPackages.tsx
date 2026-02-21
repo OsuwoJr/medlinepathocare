@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion as Motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { Activity, X } from "lucide-react";
+import { useTheme } from "./ThemeProvider";
 
 const FORMSPREE_PACKAGES_ENDPOINT = "https://formspree.io/f/mojnkjyj";
 
@@ -98,15 +99,17 @@ const bulletVariants = {
   }),
 };
 
-/* Moving border light – star/snake light traveling along the card border */
+/* Moving border light – star/snake light traveling along the card border; theme-aware (night = cyan, day = amber) */
 function BorderSnakeLight({
   duration = 6,
   delay = 0,
   clockwise = true,
+  isDark = true,
 }: {
   duration?: number;
   delay?: number;
   clockwise?: boolean;
+  isDark?: boolean;
 }) {
   const a = "3%";
   const b = "97%";
@@ -122,6 +125,17 @@ function BorderSnakeLight({
         times: [0, 0.25, 0.5, 0.75, 1] as const,
       };
 
+  const lightStyle = {
+    background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.98), rgba(251,140,0,0.85) 40%, transparent 70%)",
+    boxShadow:
+      "0 0 12px 2px rgba(255,167,38,0.8), 0 0 24px 6px rgba(255,152,0,0.4), 0 0 40px 8px rgba(255,193,7,0.2)",
+  };
+  const darkStyle = {
+    background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,188,212,0.9) 40%, transparent 70%)",
+    boxShadow:
+      "0 0 12px 2px rgba(0,188,212,0.9), 0 0 24px 6px rgba(0,188,212,0.5), 0 0 40px 8px rgba(0,188,212,0.3)",
+  };
+
   return (
     <Motion.div
       className="absolute inset-0 rounded-2xl pointer-events-none overflow-visible"
@@ -133,9 +147,7 @@ function BorderSnakeLight({
           left: path.left[0],
           top: path.top[0],
           transform: "translate(-50%, -50%)",
-          background: "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(0,188,212,0.9) 40%, transparent 70%)",
-          boxShadow:
-            "0 0 12px 2px rgba(0,188,212,0.9), 0 0 24px 6px rgba(0,188,212,0.5), 0 0 40px 8px rgba(0,188,212,0.3)",
+          ...(isDark ? darkStyle : lightStyle),
         }}
         animate={{
           left: path.left,
@@ -202,7 +214,7 @@ function FloatingIcon({
 }) {
   return (
     <Motion.div
-      className="absolute pointer-events-none text-primary-400/25"
+      className="absolute pointer-events-none text-amber-500/25 dark:text-primary-400/30"
       style={{ left, top, width: size, height: size }}
       animate={{
         x: keyframes.map(([x]) => x),
@@ -220,9 +232,9 @@ function FloatingIcon({
   );
 }
 
-/* Medical / lab SVG icons – turquoise/cyan, clean lines (DNA like screenshot: double helix) */
+/* Medical / lab SVG icons – theme-aware: amber (day) / primary (night) via parent */
 const IconDNAHelix = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 40 40" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-primary-400/35">
+  <svg viewBox="0 0 40 40" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" className="text-inherit opacity-90">
     <path d="M8 6 Q20 14 32 6 M8 34 Q20 26 32 34" />
     <path d="M8 6 Q20 14 32 6 M8 34 Q20 26 32 34" opacity="0.85" transform="translate(0 4)" />
     <path d="M12 10 Q20 18 28 10 M12 30 Q20 22 28 30" opacity="0.7" />
@@ -230,18 +242,18 @@ const IconDNAHelix = ({ size }: { size: number }) => (
   </svg>
 );
 const IconMicroscope = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-primary-400/30">
+  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <path d="M22 6h-2v6l4 8h2l-2-8V6zm-4 14h-6l-2 4h10l-2-4zm-6-4c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 26h20v2H6v-2z" />
   </svg>
 );
 const IconFlask = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 24 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-primary-400/28">
+  <svg viewBox="0 0 24 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.5" className="text-inherit opacity-90">
     <path d="M8 2h8v8l6 14H2l6-14V2z" />
     <path d="M8 10h8" opacity="0.7" />
   </svg>
 );
 const IconBacteria = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <circle cx="16" cy="16" r="4" />
     <circle cx="8" cy="10" r="2.5" />
     <circle cx="24" cy="10" r="2.5" />
@@ -251,33 +263,33 @@ const IconBacteria = ({ size }: { size: number }) => (
   </svg>
 );
 const IconSyringe = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 24 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-primary-400/28">
+  <svg viewBox="0 0 24 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-inherit opacity-90">
     <path d="M14 2v6l6 6v12H4V14l6-6V2h4zM10 2h4M12 8v6M9 11h6" />
   </svg>
 );
 const IconPill = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 28 16" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 28 16" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <path d="M4 8c0-4 4-8 8-8 2 0 4 1 6 3l2 2c2 2 3 4 3 6 0 4-4 8-8 8-2 0-4-1-6-3l-2-2c-2-2-3-4-3-6z" />
     <path d="M24 8c0 4-4 8-8 8-2 0-4-1-6-3l-2-2c-2-2-3-4-3-6 0-4 4-8 8-8 2 0 4 1 6 3l2 2c2 2 3 4 3 6z" opacity="0.8" />
   </svg>
 );
 const IconBlood = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 24 32" width={size} height={size} fill="currentColor" className="text-primary-400/28">
+  <svg viewBox="0 0 24 32" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <path d="M12 2c0 0-8 10-8 18 0 4.4 3.6 8 8 8s8-3.6 8-8c0-8-8-18-8-18z" />
   </svg>
 );
 const IconHeart = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 28" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 32 28" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <path d="M16 26l-2-2C6 16 0 10 0 6 0 2 3 0 6 0c3 0 6 2 10 6 4-4 7-6 10-6 3 0 6 2 6 6 0 4-6 10-14 18l-2 2z" />
   </svg>
 );
 const IconTestTube = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 20 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-primary-400/28">
+  <svg viewBox="0 0 20 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-inherit opacity-90">
     <path d="M6 2h8v20l4 8H2l4-8V2z" />
   </svg>
 );
 const IconVirus = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <circle cx="16" cy="16" r="3" />
     <circle cx="16" cy="6" r="1.5" />
     <circle cx="16" cy="26" r="1.5" />
@@ -290,24 +302,24 @@ const IconVirus = ({ size }: { size: number }) => (
   </svg>
 );
 const IconBeaker = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 28 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-primary-400/28">
+  <svg viewBox="0 0 28 32" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.2" className="text-inherit opacity-90">
     <path d="M8 4h12l4 22H4L8 4zM8 4v6c0 4 4 6 6 6s6-2 6-6V4" />
   </svg>
 );
 const IconCell = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 32 32" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <circle cx="16" cy="16" r="6" opacity="0.9" />
     <circle cx="16" cy="16" r="2" />
     <path d="M16 6v4M16 22v4M6 16h4M22 16h4" stroke="currentColor" strokeWidth="1" fill="none" opacity="0.6" />
   </svg>
 );
 const IconCapsule = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 24 14" width={size} height={size} fill="currentColor" className="text-primary-400/25">
+  <svg viewBox="0 0 24 14" width={size} height={size} fill="currentColor" className="text-inherit opacity-90">
     <path d="M6 7a5 5 0 0110 0c0 2-2 4-5 6-3-2-5-4-5-6z" />
   </svg>
 );
 const IconPulse = ({ size }: { size: number }) => (
-  <svg viewBox="0 0 32 20" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-primary-400/28">
+  <svg viewBox="0 0 32 20" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-inherit opacity-90">
     <path d="M2 10h6l4-8 4 16 4-8h6" />
   </svg>
 );
@@ -490,7 +502,7 @@ function PackageInterestModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 dark:bg-black/70 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -500,23 +512,23 @@ function PackageInterestModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0a0e14] p-6 shadow-2xl"
+        className="relative w-full max-w-md rounded-2xl border border-amber-200/80 dark:border-white/10 bg-white dark:bg-[#0a0e14] p-6 shadow-2xl shadow-amber-900/10 dark:shadow-none"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-4 right-4 p-1 rounded-full text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-amber-100 dark:hover:bg-white/10 transition-colors"
           aria-label="Close"
         >
           <X size={20} />
         </button>
-        <h3 id="interest-modal-title" className="text-xl font-bold text-white mb-1">
+        <h3 id="interest-modal-title" className="text-xl font-bold text-gray-900 dark:text-white mb-1">
           I&apos;m interested in {pkg.title}
         </h3>
-        <p className="text-sm text-gray-400 mb-4">{pkg.priceFormatted}</p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{pkg.priceFormatted}</p>
         {status === "success" ? (
-          <p className="text-primary-400 font-medium">Thanks! We&apos;ll get back to you soon.</p>
+          <p className="text-amber-700 dark:text-primary-400 font-medium">Thanks! We&apos;ll get back to you soon.</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-3">
             <input
@@ -525,7 +537,7 @@ function PackageInterestModal({
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 rounded-lg bg-amber-50/80 dark:bg-white/10 border border-amber-200/80 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-primary-500"
             />
             <input
               type="email"
@@ -533,7 +545,7 @@ function PackageInterestModal({
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 rounded-lg bg-amber-50/80 dark:bg-white/10 border border-amber-200/80 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-primary-500"
             />
             <input
               type="tel"
@@ -541,30 +553,30 @@ function PackageInterestModal({
               placeholder="Phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 rounded-lg bg-amber-50/80 dark:bg-white/10 border border-amber-200/80 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-primary-500"
             />
             <textarea
               placeholder="Message (optional)"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+              className="w-full px-3 py-2 rounded-lg bg-amber-50/80 dark:bg-white/10 border border-amber-200/80 dark:border-white/20 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-primary-500 resize-none"
             />
             {status === "error" && (
-              <p className="text-sm text-red-400">Something went wrong. Please try again or contact us by phone.</p>
+              <p className="text-sm text-red-500 dark:text-red-400">Something went wrong. Please try again or contact us by phone.</p>
             )}
             <div className="flex gap-2 pt-1">
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 rounded-lg border border-white/20 text-gray-300 hover:bg-white/10 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg border border-amber-300/80 dark:border-white/20 text-gray-700 dark:text-gray-300 hover:bg-amber-100/80 dark:hover:bg-white/10 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={status === "sending"}
-                className="flex-1 px-4 py-2 rounded-lg bg-primary-500 hover:bg-primary-400 text-white font-medium disabled:opacity-60 transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg bg-amber-500 dark:bg-primary-500 hover:bg-amber-600 dark:hover:bg-primary-400 text-white font-medium disabled:opacity-60 transition-colors"
               >
                 {status === "sending" ? "Sending…" : "Send"}
               </button>
@@ -580,15 +592,17 @@ export default function DiabetesHypertensionPackages() {
   const sectionRef = useRef<HTMLElement>(null);
   const inView = useInView(sectionRef, { once: true, amount: 0.15 });
   const [interestPackage, setInterestPackage] = useState<PackageItem | null>(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   return (
     <section
       ref={sectionRef}
       id="packages"
       aria-label="Diabetes and Hypertension health packages"
-      className="relative py-24 px-4 overflow-hidden bg-[#0a0e14] dark:bg-[#0a0e14]"
+      className="relative py-24 px-4 overflow-hidden bg-gradient-to-b from-sky-50 via-blue-50/95 to-amber-50/50 dark:bg-none dark:bg-[#0a0e14]"
     >
-      {/* Floating ambient glow blobs - GPU-friendly (transform, opacity) */}
+      {/* Floating ambient glow blobs – day: warm amber/sun; night: very subtle cyan so background stays much darker */}
       <Motion.div
         className="absolute inset-0 pointer-events-none"
         initial={{ opacity: 0 }}
@@ -596,7 +610,7 @@ export default function DiabetesHypertensionPackages() {
         transition={{ duration: 0.5 }}
       >
         <Motion.div
-          className="absolute -top-40 -left-40 w-[480px] h-[480px] rounded-full bg-primary-500/20 blur-[120px]"
+          className="absolute -top-40 -left-40 w-[480px] h-[480px] rounded-full bg-amber-300/25 dark:bg-primary-500/20 blur-[120px]"
           animate={{
             x: [0, 60, 0],
             y: [0, 30, 0],
@@ -604,7 +618,7 @@ export default function DiabetesHypertensionPackages() {
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <Motion.div
-          className="absolute top-1/2 -right-32 w-[360px] h-[360px] rounded-full bg-primary-400/15 blur-[100px]"
+          className="absolute top-1/2 -right-32 w-[360px] h-[360px] rounded-full bg-amber-400/20 dark:bg-primary-400/15 blur-[100px]"
           animate={{
             x: [0, -40, 0],
             y: [0, 50, 0],
@@ -612,7 +626,7 @@ export default function DiabetesHypertensionPackages() {
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         />
         <Motion.div
-          className="absolute bottom-0 left-1/3 w-[320px] h-[320px] rounded-full bg-cyan-400/10 blur-[80px]"
+          className="absolute bottom-0 left-1/3 w-[320px] h-[320px] rounded-full bg-yellow-300/15 dark:bg-cyan-400/10 blur-[80px]"
           animate={{
             x: [0, 30, 0],
             y: [0, -40, 0],
@@ -621,9 +635,9 @@ export default function DiabetesHypertensionPackages() {
         />
       </Motion.div>
 
-      {/* Subtle grid background */}
+      {/* Subtle grid – warm (day) / cyan (night); very faint in dark so background stays darker */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_right,#00bcd4_1px,transparent_1px),linear-gradient(to_bottom,#00bcd4_1px,transparent_1px)] bg-[size:48px_48px]"
+        className="absolute inset-0 pointer-events-none opacity-[0.06] dark:opacity-[0.03] bg-[linear-gradient(to_right,rgba(251,191,36,0.4)_1px,transparent_1px),linear-gradient(to_bottom,rgba(251,191,36,0.4)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#00bcd4_1px,transparent_1px),linear-gradient(to_bottom,#00bcd4_1px,transparent_1px)] bg-[size:48px_48px]"
         aria-hidden
       />
 
@@ -645,15 +659,17 @@ export default function DiabetesHypertensionPackages() {
       </div>
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Section title - scroll reveal */}
-        <Motion.h2
-          className="text-3xl md:text-4xl font-bold text-white mb-4 text-center md:text-left border-b border-primary-500/50 pb-3 uppercase tracking-wide"
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          Diabetes and Hypertension
-        </Motion.h2>
+        {/* Section title - scroll reveal; light: plain, dark: luminous blue banner per screenshot */}
+        <div className="mb-4 text-center md:text-left dark:inline-block dark:rounded-lg dark:border dark:border-primary-500/50 dark:bg-gradient-to-r dark:from-primary-900/60 dark:via-primary-800/40 dark:to-primary-900/60 dark:py-3 dark:px-4 dark:shadow-[0_0_24px_rgba(0,188,212,0.12)]">
+          <Motion.h2
+            className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white uppercase tracking-wide border-b border-amber-500/50 dark:border-0 dark:pb-0 dark:mb-0 pb-3"
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
+            Diabetes and Hypertension
+          </Motion.h2>
+        </div>
 
         {/* Cards row - staggered entrance */}
         <Motion.div
@@ -676,13 +692,14 @@ export default function DiabetesHypertensionPackages() {
                 transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] },
               }}
             >
-              {/* Glowing gradient border on hover - GPU-friendly opacity transition */}
+              {/* Glowing gradient border on hover – day: amber, night: cyan */}
               <div
                 className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-300"
                 style={{
                   padding: "1px",
-                  background:
-                    "linear-gradient(135deg, rgba(0,188,212,0.6), rgba(0,172,193,0.3), rgba(0,188,212,0.5))",
+                  background: isDark
+                    ? "linear-gradient(135deg, rgba(0,188,212,0.6), rgba(0,172,193,0.3), rgba(0,188,212,0.5))"
+                    : "linear-gradient(135deg, rgba(251,191,36,0.6), rgba(245,158,11,0.35), rgba(251,193,7,0.5))",
                   WebkitMask:
                     "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                   mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
@@ -690,17 +707,18 @@ export default function DiabetesHypertensionPackages() {
                   maskComposite: "exclude",
                 }}
               />
-              <div className="relative h-full rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-5 md:p-6 shadow-2xl">
+              <div className="relative h-full rounded-2xl border border-amber-200/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.06] backdrop-blur-xl p-5 md:p-6 shadow-2xl shadow-amber-900/5 dark:shadow-2xl">
                 {/* Moving border light – star/snake along the border */}
                 <BorderSnakeLight
                   duration={5 + cardIndex * 1.2}
                   delay={cardIndex * 0.8}
                   clockwise={cardIndex !== 1}
+                  isDark={isDark}
                 />
-                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-primary-500/20 text-primary-400 font-bold text-sm mb-3 ring-1 ring-primary-500/30">
+                <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-500/25 dark:bg-primary-500/20 text-amber-700 dark:text-primary-400 font-bold text-sm mb-3 ring-1 ring-amber-500/40 dark:ring-primary-500/30">
                   {pkg.number}
                 </div>
-                <h3 className="text-base font-bold text-white uppercase mb-4 tracking-wide">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white uppercase mb-4 tracking-wide">
                   {pkg.title}
                 </h3>
                 <Motion.ul
@@ -715,16 +733,16 @@ export default function DiabetesHypertensionPackages() {
                       key={service}
                       variants={bulletVariants}
                       custom={i}
-                      className="text-gray-400 text-xs flex items-center gap-2"
+                      className="text-gray-600 dark:text-gray-400 text-xs flex items-center gap-2"
                     >
-                      <span className="text-primary-400">•</span>
+                      <span className="text-amber-600 dark:text-primary-400">•</span>
                       {service}
                     </Motion.li>
                   ))}
                 </Motion.ul>
                 {/* Price badge with subtle shimmer */}
                 <Motion.div
-                  className="inline-block px-5 py-2.5 rounded-full bg-gradient-to-r from-primary-500/90 to-primary-400/90 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-primary-500/20"
+                  className="inline-block px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500/95 to-amber-400/95 dark:from-primary-500/90 dark:to-primary-400/90 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-amber-500/25 dark:shadow-primary-500/20"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={inView ? { opacity: 1, scale: 1 } : {}}
                   transition={{
@@ -742,7 +760,7 @@ export default function DiabetesHypertensionPackages() {
                 <Motion.button
                   type="button"
                   onClick={() => setInterestPackage(pkg)}
-                  className="mt-3 w-full px-4 py-2.5 rounded-lg border border-primary-500/50 text-primary-400 font-medium text-sm hover:bg-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500/50 transition-colors"
+                  className="mt-3 w-full px-4 py-2.5 rounded-lg border border-amber-500/50 dark:border-primary-500/50 text-amber-800 dark:text-primary-400 font-medium text-sm hover:bg-amber-500/20 dark:hover:bg-primary-500/20 focus:outline-none focus:ring-2 focus:ring-amber-500/50 dark:focus:ring-primary-500/50 transition-colors"
                   initial={{ opacity: 0 }}
                   animate={inView ? { opacity: 1 } : {}}
                   transition={{ delay: 0.5 + cardIndex * 0.1, duration: 0.4 }}
@@ -754,9 +772,9 @@ export default function DiabetesHypertensionPackages() {
           ))}
         </Motion.div>
 
-        {/* Home/Office collection - glassmorphism */}
+        {/* Home/Office collection - glassmorphism; theme-aware */}
         <Motion.div
-          className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-xl p-5 md:p-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left mb-8 shadow-xl"
+          className="rounded-2xl border border-amber-200/60 dark:border-white/10 bg-white/70 dark:bg-white/[0.06] backdrop-blur-xl p-5 md:p-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left mb-8 shadow-xl shadow-amber-900/5 dark:shadow-xl"
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{
@@ -765,29 +783,35 @@ export default function DiabetesHypertensionPackages() {
             ease: [0.25, 0.46, 0.45, 0.94],
           }}
         >
-          <p className="text-sm md:text-base font-semibold text-white/90 uppercase tracking-wide">
+          <p className="text-sm md:text-base font-semibold text-gray-800 dark:text-white/90 uppercase tracking-wide">
             Home/Office sample collection available
           </p>
           <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-primary-500/20 flex items-center justify-center flex-shrink-0 ring-1 ring-primary-500/30">
-              <Activity className="text-primary-400" size={28} aria-hidden />
+            <div className="w-14 h-14 rounded-full bg-amber-500/25 dark:bg-primary-500/20 flex items-center justify-center flex-shrink-0 ring-1 ring-amber-500/40 dark:ring-primary-500/30">
+              <Activity className="text-amber-700 dark:text-primary-400" size={28} aria-hidden />
             </div>
             <div>
               <Motion.span
-                className="inline-block px-2.5 py-1 rounded-full bg-primary-500/90 text-white text-xs font-bold"
+                className="inline-block px-2.5 py-1 rounded-full bg-amber-500/95 dark:bg-primary-500/90 text-white text-xs font-bold"
                 animate={{
-                  boxShadow: [
-                    "0 0 12px rgba(0,188,212,0.3)",
-                    "0 0 20px rgba(0,188,212,0.5)",
-                    "0 0 12px rgba(0,188,212,0.3)",
-                  ],
+                  boxShadow: isDark
+                    ? [
+                        "0 0 12px rgba(0,188,212,0.3)",
+                        "0 0 20px rgba(0,188,212,0.5)",
+                        "0 0 12px rgba(0,188,212,0.3)",
+                      ]
+                    : [
+                        "0 0 12px rgba(251,191,36,0.35)",
+                        "0 0 20px rgba(245,158,11,0.45)",
+                        "0 0 12px rgba(251,191,36,0.35)",
+                      ],
                 }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
               >
                 FREE
               </Motion.span>
-              <p className="text-xs text-gray-400">Blood pressure check</p>
-              <p className="text-lg font-mono font-bold text-primary-400">120 / 80</p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">Blood pressure check</p>
+              <p className="text-lg font-mono font-bold text-amber-700 dark:text-primary-400">120 / 80</p>
             </div>
           </div>
         </Motion.div>
